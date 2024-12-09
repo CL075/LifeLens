@@ -5,7 +5,5 @@ Group 10
 Group Member: 113522043, 113522057, 113522099, 113522116
 
 #前端
-npm install
+#npm install --force
 npm start
-
-端口在 3031
