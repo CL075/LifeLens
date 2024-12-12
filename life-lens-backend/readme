@@ -1,0 +1,36 @@
+npm install 
+npm start
+
+project/
+├── controllers/          # 處理請求的邏輯 (每個功能獨立文件)
+│   ├── recordController.js
+│   ├── userController.js
+│   ├── authController.js
+│   └── ...
+├── routes/               # 定義 API 路由
+│   ├── recordRoutes.js
+│   ├── userRoutes.js
+│   ├── authRoutes.js
+│   └── ...
+├── models/               # 資料結構或資料庫互動邏輯
+│   ├── recordModel.js
+│   ├── userModel.js
+│   └── ...
+├── services/             # 業務邏輯 (如計算、第三方服務)
+│   ├── awsService.js
+│   ├── emailService.js
+│   └── ...
+├── middlewares/          # 中介程式 (如驗證、錯誤處理)
+│   ├── authMiddleware.js
+│   └── errorMiddleware.js
+├── config/               # 配置檔案 (如環境變數、資料庫連接)
+│   ├── db.js
+│   ├── awsConfig.js
+│   └── ...
+├── utils/                # 工具函數
+│   ├── logger.js
+│   ├── helper.js
+│   └── ...
+├── app.js                # 主應用入口，載入中介軟體和路由
+├── server.js             # 啟動伺服器
+└── package.json
