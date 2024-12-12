@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -24,38 +24,54 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const [records, setRecords] = useState([
-    {
-      date: "2024/12/01",
-      mood: "happy",
-      note: "今天很開心，去了公園散步。",
-      exercise: "跑步",
-      exerciseDetails: "跑了5公里",
-      calories: "500",
-      amount: "1000",
-      transactionType: "income",
-    },
-    {
-      date: "2023/12/10",
-      mood: "happy",
-      note: "今天心情好，工作有點壓力。",
-      exercise: "游泳",
-      exerciseDetails: "游了50分鐘",
-      calories: "600",
-      amount: "300",
-      transactionType: "expense",
-    },
-    {
-      date: "2023/12/09",
-      mood: "unhappy",
-      note: "今天心情不太好，工作有點壓力。",
-      exercise: "游泳",
-      exerciseDetails: "游了30分鐘",
-      calories: "400",
-      amount: "200",
-      transactionType: "expense",
-    },
-  ]);
+  const [records, setRecords] = useState([]);
+  
+    // 使用 useEffect 获取数据
+    useEffect(() => {
+      const fetchRecords = async () => {
+        try {
+          const response = await fetch("http://54.198.0.53:5000/api/records");
+          const data = await response.json();
+          setRecords(data);
+        } catch (error) {
+          console.error("Error fetching records:", error);
+        }
+      };
+  
+      fetchRecords();
+    }, []); // 空依赖数组，表示只在组件挂载时执行
+  // const [records, setRecords] = useState([
+  //   {
+  //     date: "2024/12/01",
+  //     mood: "happy",
+  //     note: "今天很開心，去了公園散步。",
+  //     exercise: "跑步",
+  //     exerciseDetails: "跑了5公里",
+  //     calories: "500",
+  //     amount: "1000",
+  //     transactionType: "income",
+  //   },
+  //   {
+  //     date: "2023/12/10",
+  //     mood: "happy",
+  //     note: "今天心情好，工作有點壓力。",
+  //     exercise: "游泳",
+  //     exerciseDetails: "游了50分鐘",
+  //     calories: "600",
+  //     amount: "300",
+  //     transactionType: "expense",
+  //   },
+  //   {
+  //     date: "2023/12/09",
+  //     mood: "unhappy",
+  //     note: "今天心情不太好，工作有點壓力。",
+  //     exercise: "游泳",
+  //     exerciseDetails: "游了30分鐘",
+  //     calories: "400",
+  //     amount: "200",
+  //     transactionType: "expense",
+  //   },
+  // ]);
 
   const totalCalories = records.reduce(
     (total, record) => total + (parseFloat(record.calories) || 0),

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Record = () => {
   const [mood, setMood] = useState("");
@@ -29,6 +29,48 @@ const Record = () => {
   const handleAmountChange = (event) => setAmount(event.target.value);
   const handleTransactionTypeChange = (event) =>
     setTransactionType(event.target.value);
+
+  // 保存记录的函数
+  const handleSaveRecord = async () => {
+    const newRecord = {
+      date: new Date().toLocaleDateString("zh-TW"),
+      mood,
+      note,
+      exercise,
+      exerciseDetails,
+      calories,
+      amount,
+      transactionType,
+    };
+
+    try {
+      const response = await fetch("http://54.198.0.53:5000/api/records", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newRecord),
+      });
+
+      if (response.ok) {
+        alert("记录已保存！");
+        setMood(""); // 重置状态
+        setNote("");
+        setExercise("");
+        setExerciseDetails("");
+        setCalories("");
+        setAmount("");
+        setTransactionType("income");
+      } else {
+        const errorData = await response.json();
+        console.error("Server Error:", errorData);
+        alert("保存记录失败：" + errorData.message);
+      }
+    } catch (error) {
+      console.error("Error saving record:", error);
+      alert("保存记录时发生错误！");
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-4 bg-white shadow-md rounded-lg">
@@ -225,7 +267,8 @@ const Record = () => {
       <div className="text-center">
         <button
           className="px-4 py-2 w-full bg-blue-500 text-white rounded-lg"
-          onClick={() => alert("記錄已保存！")}
+          // onClick={() => alert("記錄已保存！")}
+          onClick={handleSaveRecord}
         >
           記錄！
         </button>
