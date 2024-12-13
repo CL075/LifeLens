@@ -12,11 +12,11 @@ const getOneYearAgoDate = () => {
 };
 
 const Diary = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedEntryID, setSelectedEntryID] = useState(null); // 替換 selectedDate 為 entryID
   const [showTimeCapsule, setShowTimeCapsule] = useState(false); // 用來控制顯示時光膠囊紀錄
   const [showModal, setShowModal] = useState(false); // 控制彈跳視窗顯示
   const [timeCapsuleRecord, setTimeCapsuleRecord] = useState(null); // 用來存儲一年前的紀錄
-
+  
   const [records, setRecords] = useState([
     {
       date: "2024/12/01",
@@ -104,12 +104,12 @@ const Diary = () => {
 
   
 
-  const handleDateClick = (date) => {
-    setSelectedDate(date);
-  };
+const handleEntryClick = (entryID) => {
+  setSelectedEntryID(entryID); // 設置選中的 entryID
+};
 
   const handleBackToDiary = () => {
-    setSelectedDate(null);
+    setSelectedEntryID(null);
   };
 
   const handleTimeCapsule = () => {
@@ -154,10 +154,9 @@ const Diary = () => {
   };
 
   // 如果有選擇日期，顯示該日期的紀錄
-  if (selectedDate) {
+  if (selectedEntryID) {
     const selectedRecord = records.find(
-      (record) => record.date === selectedDate
-    ) || {};
+      (record) => record.entryID === selectedEntryID) || {};
     
 
 
@@ -170,7 +169,7 @@ const Diary = () => {
           返回主頁
         </button>
         <h2 className="text-3xl font-semibold text-center mb-6 text-blue-600">
-          {selectedDate} 的紀錄
+          {selectedRecord.date} 的紀錄
         </h2>
         <div className="space-y-4">
           <div className="p-4 bg-gray-100 rounded-lg shadow-md">
@@ -219,10 +218,10 @@ const Diary = () => {
         </button>
 
         {records.length > 0 ? (
-    records.map((record, index) => (
+    records.map((record) => (
         <button
-            key={index}
-            onClick={() => handleDateClick(record.date)}
+            key={record.entryID}
+            onClick={() => handleEntryClick(record.entryID)}
             className="w-full text-left px-6 py-4 bg-gray-200 rounded-lg shadow-md hover:bg-gray-300 transition-all ease-in-out duration-200"
         >
             <div className="flex justify-between items-center">
