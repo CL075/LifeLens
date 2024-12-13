@@ -18,36 +18,36 @@ const Diary = () => {
   const [timeCapsuleRecord, setTimeCapsuleRecord] = useState(null); // 用來存儲一年前的紀錄
   
   const [records, setRecords] = useState([
-    {
-      date: "2024/12/01",
-      mood: "happy",
-      note: "今天很開心，去了公園散步。",
-      exercise: "跑步",
-      exerciseDetails: "跑了5公里",
-      calories: "500",
-      amount: "1000",
-      transactionType: "income",
-    },
-    {
-      date: "2023/12/10",
-      mood: "happy",
-      note: "今天心情好，工作有點壓力。",
-      exercise: "游泳",
-      exerciseDetails: "游了50分鐘",
-      calories: "600",
-      amount: "300",
-      transactionType: "expense",
-    },
-    {
-      date: "2023/12/09",
-      mood: "unhappy",
-      note: "今天心情不太好，工作有點壓力。",
-      exercise: "游泳",
-      exerciseDetails: "游了30分鐘",
-      calories: "400",
-      amount: "200",
-      transactionType: "expense",
-    },
+  //   {
+  //     date: "2024/12/01",
+  //     mood: "happy",
+  //     note: "今天很開心，去了公園散步。",
+  //     exercise: "跑步",
+  //     exerciseDetails: "跑了5公里",
+  //     calories: "500",
+  //     amount: "1000",
+  //     transactionType: "income",
+  //   },
+  //   {
+  //     date: "2023/12/10",
+  //     mood: "happy",
+  //     note: "今天心情好，工作有點壓力。",
+  //     exercise: "游泳",
+  //     exerciseDetails: "游了50分鐘",
+  //     calories: "600",
+  //     amount: "300",
+  //     transactionType: "expense",
+  //   },
+  //   {
+  //     date: "2023/12/09",
+  //     mood: "unhappy",
+  //     note: "今天心情不太好，工作有點壓力。",
+  //     exercise: "游泳",
+  //     exerciseDetails: "游了30分鐘",
+  //     calories: "400",
+  //     amount: "200",
+  //     transactionType: "expense",
+  //   },
   ]);
 
   useEffect(() => {
