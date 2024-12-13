@@ -26,11 +26,11 @@ ChartJS.register(
 const Dashboard = () => {
   const [records, setRecords] = useState([]);
   
-    // 使用 useEffect 获取数据
+    // 使用 useEffect 獲取數據
     useEffect(() => {
       const fetchRecords = async () => {
         try {
-          const response = await fetch("http://54.198.0.53:5000/api/records");
+          const response = await fetch("http://54.209.222.76:5000/api/records");
           const data = await response.json();
           setRecords(data);
         } catch (error) {
@@ -39,7 +39,7 @@ const Dashboard = () => {
       };
   
       fetchRecords();
-    }, []); // 空依赖数组，表示只在组件挂载时执行
+    }, []); // 空依賴數組，表示只在組件掛載時執行
   // const [records, setRecords] = useState([
   //   {
   //     date: "2024/12/01",

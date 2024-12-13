@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect('mongodb://admin:admin@54.198.0.53:27017/AWS_final', {
+mongoose.connect('mongodb://admin:admin@54.209.222.76:27017/AWS_final', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => console.log("MongoDB connected"))

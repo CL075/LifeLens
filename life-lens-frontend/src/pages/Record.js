@@ -44,7 +44,7 @@ const Record = () => {
     };
 
     try {
-      const response = await fetch("http://54.198.0.53:5000/api/records", {
+      const response = await fetch("http://54.209.222.76:5000/api/records", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,8 +53,8 @@ const Record = () => {
       });
 
       if (response.ok) {
-        alert("记录已保存！");
-        setMood(""); // 重置状态
+        alert("紀錄已保存！");
+        setMood(""); // 重置狀態
         setNote("");
         setExercise("");
         setExerciseDetails("");
@@ -64,11 +64,11 @@ const Record = () => {
       } else {
         const errorData = await response.json();
         console.error("Server Error:", errorData);
-        alert("保存记录失败：" + errorData.message);
+        alert("紀錄保存失敗：" + errorData.message);
       }
     } catch (error) {
       console.error("Error saving record:", error);
-      alert("保存记录时发生错误！");
+      alert("紀錄保存時發生錯誤！");
     }
   };
 
