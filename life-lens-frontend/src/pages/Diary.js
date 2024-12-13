@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useEffect } from "react"; // 新增
+import { queryEntries } from "../utils/dynamoDB"; // 新增
+
 
 // 輔助函數：計算一年前的今天日期
 const getOneYearAgoDate = () => {
@@ -47,6 +50,60 @@ const Diary = () => {
     },
   ]);
 
+  useEffect(() => {
+    const fetchRecords = async () => {
+        const userID = "exampleUser"; // 替換為當前用戶 ID
+        const startDate = "2023-01-01"; // 起始日期
+        const endDate = new Date().toISOString().split("T")[0]; // 當前日期
+
+        try {
+            const data = await queryEntries(userID, startDate, endDate);
+            console.log("Query result:", data);
+
+            if (!data || !Array.isArray(data)) {
+                console.error("No data or invalid data structure");
+                setRecords([]); // 如果數據無效，設置為空數組
+                return;
+            }
+
+            const transformedData = data.map((record) => {
+              try {
+                  const content = JSON.parse(record.content.S || "{}"); // 確保解析成功
+                  return {
+                    entryID: record.entryID.S, // 加入 entryID
+                    date: record.date.S,
+                    mood: content.mood || "neutral",
+                    note: content.note || "",
+                    exercise: content.exercise || "無運動",
+                    exerciseDetails: content.exerciseDetails || "",
+                    calories: parseFloat(content.calories || 0),
+                    amount: parseFloat(content.amount || 0),
+                    transactionType: content.transactionType || "expense",
+                    image: content.image || null,
+                  };
+              } catch (error) {
+                  console.error("解析記錄失敗:", error);
+                  return null; // 跳過錯誤記錄
+              }
+          }).filter((record) => record); // 過濾掉無效記錄
+          
+
+            setRecords(transformedData); // 更新 records 為平面結構
+        } catch (error) {
+            console.error("Error fetching records:", error);
+            setRecords([]); // 發生錯誤時設置為空數組
+        }
+    };
+
+    fetchRecords();
+}, []);
+
+
+  
+
+
+  
+
   const handleDateClick = (date) => {
     setSelectedDate(date);
   };
@@ -56,27 +113,22 @@ const Diary = () => {
   };
 
   const handleTimeCapsule = () => {
-    const oneYearAgoDate = getOneYearAgoDate(); // 假設這個是 Date 物件
+    const oneYearAgoDate = getOneYearAgoDate(); // 獲取一年前的日期
     console.log("oneYearAgoDate", oneYearAgoDate);
 
     const foundRecord = records.find((record) => {
-      // 假設 record.date 是 'YYYY/MM/DD' 格式的字串，我們將其轉換為 'YYYY-MM-DD' 格式
-      const [year, month, day] = record.date.split("/"); // 拆解 'YYYY/MM/DD' 格式的日期
-      const formattedRecordDate = `${year}-${month.padStart(
-        2,
-        "0"
-      )}-${day.padStart(2, "0")}`; // 轉換為 'YYYY-MM-DD'
-
-      console.log("Formatted record.date:", formattedRecordDate);
-
-      // 比較轉換後的日期
-      return formattedRecordDate === oneYearAgoDate;
+        const formattedRecordDate = record.date.replace(/\//g, "-"); // 確保日期格式一致
+        return formattedRecordDate === oneYearAgoDate;
     });
 
     console.log("foundRecord", foundRecord);
-    setTimeCapsuleRecord(foundRecord);
+
+    setTimeCapsuleRecord(foundRecord || null); // 更新時光膠囊數據
     setShowModal(true); // 顯示彈跳視窗
-  };
+};
+
+  
+  
 
   const closeModal = () => {
     setShowModal(false);
@@ -105,7 +157,9 @@ const Diary = () => {
   if (selectedDate) {
     const selectedRecord = records.find(
       (record) => record.date === selectedDate
-    );
+    ) || {};
+    
+
 
     return (
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl">
@@ -164,31 +218,41 @@ const Diary = () => {
           時光膠囊
         </button>
 
-        {records.map((record, index) => (
-          <button
+        {records.length > 0 ? (
+    records.map((record, index) => (
+        <button
             key={index}
             onClick={() => handleDateClick(record.date)}
             className="w-full text-left px-6 py-4 bg-gray-200 rounded-lg shadow-md hover:bg-gray-300 transition-all ease-in-out duration-200"
-          >
+        >
             <div className="flex justify-between items-center">
-              <span className="text-lg font-medium">
-                {record.date}
-                <span className="text-xl">{moodIcons[record.mood]}</span>
-              </span>
-
-              <span
-                className={`text-sm font-semibold ${
-                  record.transactionType === "income"
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
-              >
-                {record.transactionType === "income" ? "收入" : "支出"}
-              </span>
+                <span className="text-lg font-medium">
+                    {record.date}
+                    <span className="text-xl">{moodIcons[record.mood] || "😐"}</span>
+                </span>
+                <span
+                    className={`text-sm font-semibold ${
+                        record.transactionType === "income"
+                            ? "text-green-600"
+                            : "text-red-600"
+                    }`}
+                >
+                    {record.transactionType === "income" ? "收入" : "支出"}
+                </span>
             </div>
-            <p className="text-gray-600 mt-2">{record.note.slice(0, 50)}...</p>
-          </button>
-        ))}
+            <p className="text-gray-600 mt-2">
+                {record.note ? record.note.slice(0, 50) : "無內容"}...
+            </p>
+        </button>
+    ))
+) : (
+    <p className="text-center text-gray-500">目前沒有日記紀錄。</p>
+)}
+
+
+
+
+
       </div>
 
       {/* 時光膠囊彈跳視窗 */}
@@ -211,18 +275,16 @@ const Diary = () => {
                   一年前的今日紀錄：
                 </h3>
 
-                <p>日期：{timeCapsuleRecord.date}</p>
-                <p>心情：{moodIcons[timeCapsuleRecord.mood]}</p>
-                <p className="mt-2">日記：{timeCapsuleRecord.note}</p>
-                <p className="mt-2">運動：{timeCapsuleRecord.exercise}</p>
+                <p>日期：{timeCapsuleRecord.date || "未知日期"}</p>
+                <p>心情：{moodIcons[timeCapsuleRecord.mood] || "😐"}</p>
+                <p className="mt-2">日記：{timeCapsuleRecord.note || "無內容"}</p>
+                <p className="mt-2">運動：{timeCapsuleRecord.exercise || "無運動"}</p>
                 <p className="mt-2">
-                  卡路里消耗：{timeCapsuleRecord.calories} 卡路里
+                  卡路里消耗：{timeCapsuleRecord.calories || 0} 卡路里
                 </p>
                 <p className="mt-2">
-                  {timeCapsuleRecord.transactionType === "income"
-                    ? "收入"
-                    : "支出"}
-                  ：{timeCapsuleRecord.amount} 元
+                  {timeCapsuleRecord.transactionType === "income" ? "收入" : "支出"}：
+                  {timeCapsuleRecord.amount || 0} 元
                 </p>
               </div>
             ) : (

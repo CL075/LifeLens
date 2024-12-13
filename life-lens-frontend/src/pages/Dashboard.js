@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
+import { useEffect } from "react";
+import { queryEntries } from "../utils/dynamoDB"; // 新增
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,6 +13,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+
+
 
 ChartJS.register(
   CategoryScale,
@@ -57,40 +61,92 @@ const Dashboard = () => {
     },
   ]);
 
-  const totalCalories = records.reduce(
-    (total, record) => total + (parseFloat(record.calories) || 0),
-    0
-  );
+  useEffect(() => {
+    // const fetchRecords = async () => {
+    //   const userID = "exampleUser"; // 替換為用戶 ID
+    //   const data = await queryEntries(userID, "record");
+    //   setRecords(data || []); // 更新 records
+    // };
+    const fetchRecords = async () => {
+      const userID = "exampleUser"; // 替換為當前用戶 ID
+      const startDate = "2023-01-01"; // 起始日期
+      const endDate = new Date().toISOString().split("T")[0]; // 當前日期
 
-  const totalIncome = records
-    .filter((record) => record.transactionType === "income")
-    .reduce((total, record) => total + (parseFloat(record.amount) || 0), 0);
+      try {
+          const data = await queryEntries(userID, startDate, endDate);
+          console.log("Query result:", data);
 
-  const totalExpense = records
-    .filter((record) => record.transactionType === "expense")
-    .reduce((total, record) => total + (parseFloat(record.amount) || 0), 0);
+          if (!data || !Array.isArray(data)) {
+              console.error("No data or invalid data structure");
+              setRecords([]); // 如果數據無效，設置為空數組
+              return;
+          }
 
-  const exerciseStats = records
-    .filter((record) => record.exercise)
-    .reduce((stats, record) => {
-      const exercise = record.exercise;
-      const calories = parseFloat(record.calories) || 0;
+          const transformedData = data.map((record) => {
+            try {
+                const content = JSON.parse(record.content.S || "{}"); // 確保解析成功
+                return {
+                  entryID: record.entryID.S, // 加入 entryID
+                  date: record.date.S,
+                  mood: content.mood || "neutral",
+                  note: content.note || "",
+                  exercise: content.exercise || "無運動",
+                  exerciseDetails: content.exerciseDetails || "",
+                  calories: parseFloat(content.calories || 0),
+                  amount: parseFloat(content.amount || 0),
+                  transactionType: content.transactionType || "expense",
+                  image: content.image || null,
+                };
+            } catch (error) {
+                console.error("解析記錄失敗:", error);
+                return null; // 跳過錯誤記錄
+            }
+        }).filter((record) => record); // 過濾掉無效記錄
+        
 
-      if (!stats[exercise]) {
-        stats[exercise] = 0;
+          setRecords(transformedData); // 更新 records 為平面結構
+      } catch (error) {
+          console.error("Error fetching records:", error);
+          setRecords([]); // 發生錯誤時設置為空數組
       }
+  };
+    fetchRecords();
+}, []);
 
-      stats[exercise] += calories;
-      return stats;
-    }, {});
+const totalCalories = records.reduce(
+  (total, record) => total + parseFloat(record.calories?.S || record.calories || 0),
+  0
+);
 
-  const moodStats = records.reduce((stats, record) => {
-    if (!stats[record.mood]) {
-      stats[record.mood] = 0;
-    }
-    stats[record.mood] += 1;
-    return stats;
-  }, {});
+const totalIncome = records
+.filter((record) => record.transactionType?.S === "income")
+.reduce((total, record) => total + parseFloat(record.amount?.S || record.amount || 0), 0);
+
+
+const totalExpense = records
+.filter((record) => record.transactionType?.S === "expense")
+.reduce((total, record) => total + parseFloat(record.amount?.S || record.amount || 0), 0);
+
+const exerciseStats = records.reduce((stats, record) => {
+  const exercise = record.exercise?.S || record.exercise || "";
+  const calories = parseFloat(record.calories?.S || record.calories || 0);
+
+  if (exercise) {
+    if (!stats[exercise]) stats[exercise] = 0;
+    stats[exercise] += calories;
+  }
+  return stats;
+}, {});
+
+const moodStats = records.reduce((stats, record) => {
+  const mood = record.mood?.S || record.mood || "";
+  if (mood) {
+    if (!stats[mood]) stats[mood] = 0;
+    stats[mood] += 1;
+  }
+  return stats;
+}, {});
+
   // 定義心情對應的表情符號和顏色
   const moodLabels = {
     super_happy: "🤩",
