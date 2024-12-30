@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { addEntry } from "../utils/dynamoDB"; // 新增
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import s3Client from "../utils/awsClient"; // 引入共享的 S3 客户端
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import {  GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const Record = () => {
   const [mood, setMood] = useState("");
@@ -33,31 +36,42 @@ const Record = () => {
   const handleTransactionTypeChange = (event) =>
     setTransactionType(event.target.value);
 
-  const s3Client = new S3Client({
-    region: "us-east-1", // 替換為您的區域
-    credentials: {
-        accessKeyId: "您的 Access Key ID",
-        secretAccessKey: "您的 Secret Access Key",
-    },
-});
 
 async function uploadImageToS3(file) {
-    const bucketName = "您的 S3 Bucket 名稱";
-    const fileName = `${new Date().getTime()}-${file.name}`; // 確保文件名唯一
+  const bucketName = "my-record-app-bucket";
+  const fileName = `${Date.now()}-${file.name}`; // 确保文件名唯一
 
-    const params = {
-        Bucket: bucketName,
-        Key: fileName,
-        Body: file,
-        ContentType: file.type,
-    };
+  const params = {
+      Bucket: bucketName,
+      Key: fileName,
+      Body: file,
+      ContentType: file.type,
+  };
+
+  try {
+    console.log("开始上传文件到 S3:", params); // 打印上传参数
+    const response = await s3Client.send(new PutObjectCommand(params)); // 上传文件
+    console.log("上传成功:", response); // 打印成功日志
+    return fileName; // 返回文件名
+} catch (err) {
+    console.error("上传失败:", err); // 打印失败日志
+    throw err; // 抛出错误以便进一步调试
+}
+}
+
+
+async function getPresignedUrl(fileName) {
+  const bucketName = "my-record-app-bucket"; // 替換為存儲桶名稱
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: fileName,
+    });
 
     try {
-        await s3Client.send(new PutObjectCommand(params));
-        return `https://${bucketName}.s3.amazonaws.com/${fileName}`;
-    } catch (err) {
-        console.error("S3 上傳失敗:", err);
-        throw err;
+        return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    } catch (error) {
+        console.error("生成签名 URL 出错:", error);
+        throw error;
     }
 }
 
@@ -66,14 +80,15 @@ async function uploadImageToS3(file) {
     const today = new Date().toISOString().split("T")[0]; // 獲取今天日期
 
     // 如果有圖片，先上傳圖片並獲取 URL
-    let imageUrl = null;
+    let imageFileName = null;
     if (image) {
         try {
-            imageUrl = await uploadImageToS3(image); // 假設這是一個上傳圖片的函數
-        } catch (err) {
-            console.error("圖片上傳失敗:", err);
-            alert("圖片上傳失敗，請稍後再試！");
-            return; // 上傳圖片失敗則取消整個操作
+            // 上传图片并获取文件名
+            imageFileName = await uploadImageToS3(image);
+        } catch (error) {
+            console.error("图片上传失败:", error);
+            alert("图片上传失败，请稍后再试！");
+            return;
         }
     }
 
@@ -87,7 +102,7 @@ async function uploadImageToS3(file) {
         calories: calories || null,
         transactionType,
         amount: amount || null,
-        image: imageUrl, // 保存圖片 URL
+        image: imageFileName, // 保存圖片 URL
     });
     
   
@@ -314,3 +329,4 @@ async function uploadImageToS3(file) {
 };
 
 export default Record;
+

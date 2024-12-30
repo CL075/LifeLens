@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { useEffect } from "react"; // 新增
 import { queryEntries } from "../utils/dynamoDB"; // 新增
+import s3Client from "../utils/awsClient"; // 引入共享的 S3 客户端
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+
+
 
 
 // 輔助函數：計算一年前的今天日期
@@ -50,53 +56,80 @@ const Diary = () => {
   //   },
   ]);
 
-  useEffect(() => {
-    const fetchRecords = async () => {
-        const userID = "exampleUser"; // 替換為當前用戶 ID
-        const startDate = "2023-01-01"; // 起始日期
-        const endDate = new Date().toISOString().split("T")[0]; // 當前日期
 
-        try {
-            const data = await queryEntries(userID, startDate, endDate);
-            console.log("Query result:", data);
 
-            if (!data || !Array.isArray(data)) {
-                console.error("No data or invalid data structure");
-                setRecords([]); // 如果數據無效，設置為空數組
-                return;
-            }
+useEffect(() => {
+  const fetchRecords = async () => {
+      const userID = "exampleUser"; // 替換為當前用戶 ID
+      const startDate = "2023-01-01"; // 起始日期
+      const endDate = new Date().toISOString().split("T")[0]; // 當前日期
 
-            const transformedData = data.map((record) => {
-              try {
-                  const content = JSON.parse(record.content.S || "{}"); // 確保解析成功
-                  return {
-                    entryID: record.entryID.S, // 加入 entryID
-                    date: record.date.S,
-                    mood: content.mood || "neutral",
-                    note: content.note || "",
-                    exercise: content.exercise || "無運動",
-                    exerciseDetails: content.exerciseDetails || "",
-                    calories: parseFloat(content.calories || 0),
-                    amount: parseFloat(content.amount || 0),
-                    transactionType: content.transactionType || "expense",
-                    image: content.image || null,
-                  };
-              } catch (error) {
-                  console.error("解析記錄失敗:", error);
-                  return null; // 跳過錯誤記錄
-              }
-          }).filter((record) => record); // 過濾掉無效記錄
-          
+      try {
+          const data = await queryEntries(userID, startDate, endDate);
+          console.log("Query result:", data);
 
-            setRecords(transformedData); // 更新 records 為平面結構
-        } catch (error) {
-            console.error("Error fetching records:", error);
-            setRecords([]); // 發生錯誤時設置為空數組
-        }
-    };
+          if (!data || !Array.isArray(data)) {
+              console.error("No data or invalid data structure");
+              setRecords([]); // 如果數據無效，設置為空數組
+              return;
+          }
 
-    fetchRecords();
+          const transformedData = await Promise.all(
+              data.map(async (record) => {
+                  try {
+                      const content = JSON.parse(record.content.S || "{}"); // 確保解析成功
+
+                      // 動態生成預簽名 URL（如果有圖片）
+                      const presignedUrl = content.image
+                          ? await getPresignedUrl(content.image)
+                          : null;
+
+                      return {
+                          entryID: record.entryID.S, // 加入 entryID
+                          date: record.date.S,
+                          mood: content.mood || "neutral",
+                          note: content.note || "",
+                          exercise: content.exercise || "無運動",
+                          exerciseDetails: content.exerciseDetails || "",
+                          calories: parseFloat(content.calories || 0),
+                          amount: parseFloat(content.amount || 0),
+                          transactionType: content.transactionType || "expense",
+                          image: presignedUrl, // 替換為預簽名 URL
+                      };
+                  } catch (error) {
+                      console.error("解析記錄失敗:", error);
+                      return null; // 跳過錯誤記錄
+                  }
+              })
+          );
+
+          setRecords(transformedData.filter((record) => record)); // 過濾掉無效記錄
+      } catch (error) {
+          console.error("Error fetching records:", error);
+          setRecords([]); // 發生錯誤時設置為空數組
+      }
+  };
+
+  fetchRecords();
 }, []);
+
+// 動態生成預簽名 URL 的函數
+const getPresignedUrl = async (fileName) => {
+  const bucketName = "my-record-app-bucket"; // 替換為您的存儲桶名稱
+
+  const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: fileName,
+  });
+
+  try {
+      return await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // 有效期 1 小時
+  } catch (error) {
+      console.error("生成預簽名 URL 出錯:", error);
+      return null;
+  }
+};
+
 
 
   
@@ -172,6 +205,22 @@ const handleEntryClick = (entryID) => {
           {selectedRecord.date} 的紀錄
         </h2>
         <div className="space-y-4">
+          {/* 显示完整图片 */}
+          {selectedRecord.image && (
+              <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+                  <p className="font-medium text-lg">日記圖片：</p>
+                  <img
+                      src={selectedRecord.image}
+                      alt="日記圖片"
+                      className="mt-2 max-w-full h-auto rounded-lg"
+                      onError={(e) => {
+                        e.target.src = "/path-to-placeholder-image.jpg"; // 替换为占位图
+                        e.target.alt = "图片加载失败";
+                    }}
+                  />
+                  {console.log("Image URL:", selectedRecord.image)}
+              </div>
+          )}
           <div className="p-4 bg-gray-100 rounded-lg shadow-md">
             <p className="font-medium text-lg">
               心情：{moodIcons[selectedRecord.mood]}
@@ -239,6 +288,19 @@ const handleEntryClick = (entryID) => {
                     {record.transactionType === "income" ? "收入" : "支出"}
                 </span>
             </div>
+            {/* 显示图片缩略图 */}
+            {record.image && (
+                <img
+                    src={record.image}
+                    alt="日记图片"
+                    className="mt-2 h-20 w-20 object-cover rounded-lg"
+                    onError={(e) => {
+                      e.target.src = "/path-to-placeholder-image.jpg"; // 替换为默认图片
+                      e.target.alt = "图片加载失败";
+                  }}
+                />
+            )}
+
             <p className="text-gray-600 mt-2">
                 {record.note ? record.note.slice(0, 50) : "無內容"}...
             </p>
