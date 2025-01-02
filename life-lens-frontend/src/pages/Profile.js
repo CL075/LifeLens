@@ -25,14 +25,19 @@ const Profile = () => {
       console.error("更新用戶資料失敗：", error);
     }
   }
-  
+  // console.log("user.email 的值:", user.email);
+  // console.log("user.name 的值:", user.name);
+  console.log("user:", user);
+
+
+
   useEffect(() => {
     // 从 localStorage 获取用户数据
     const savedUser = JSON.parse(localStorage.getItem("userData"));
     if (savedUser) {
       setUser({
-        username: savedUser.username,
-        email: savedUser.email,
+        username: typeof savedUser.username === "object" ? savedUser.username.S : savedUser.username,
+        email: savedUser.email?.S || savedUser.email, // 解包多層結構
         picture: savedUser.picture || "https://via.placeholder.com/150",
       });
     }
@@ -63,12 +68,12 @@ const Profile = () => {
       if (userData.length > 0) {
         const userInfo = userData[0];
         setUser({
-          username: userInfo.username.S,
-          email: userInfo.email,
-          picture: userInfo.picture || "https://via.placeholder.com/150",
+          username: userInfo.username?.S || userInfo.username,
+          email: userInfo.email?.S || userInfo.email, // 解包多層結構
+          picture: userInfo.picture?.S || userInfo.picture || "https://via.placeholder.com/150",
         });
         setNewUsername(userInfo.username.S);
-        setNewEmail(userInfo.email);
+        setNewEmail(userInfo.email?.S || userInfo.email);
       }
     };
 
@@ -106,7 +111,7 @@ const Profile = () => {
     const updatedUser = {
       ...user,
       username: newUsername,
-      email: newEmail,
+      email: typeof newEmail === "object" ? newEmail.S : newEmail, // 確保 email 是字符串
     };
   
     setUser(updatedUser);
@@ -141,9 +146,11 @@ const Profile = () => {
         </div>
         <div className="text-center mt-4">
           <h2 className="text-2xl font-semibold text-gray-900">
-            {user.username}
+            {typeof user.username === "object" ? user.username.S : user.username}
           </h2>
-          <p className="text-sm text-gray-500 mt-2">{user.email}</p>
+          <p className="text-sm text-gray-500 mt-2">
+            {typeof user.email === "object" ? user.email.S : user.email}
+            </p>
         </div>
         <div className="mt-6 p-4">
           <button
@@ -187,7 +194,7 @@ const EditForm = ({
     try {
       const updatedUser = {
         username: newUsername,
-        email: newEmail,
+        email: typeof newEmail === "object" ? newEmail.S : newEmail, // 解包多層結構
       };
 
       // 如果密碼有更改，進行加密並添加到更新內容
@@ -204,7 +211,7 @@ const EditForm = ({
       setUser((prevUser) => ({
         ...prevUser,
         username: newUsername,
-        email: newEmail,
+        email: updatedUser.email,
       }));
 
       alert("資料已更新！");

@@ -76,17 +76,17 @@ async function getPresignedUrl(fileName) {
     }
 }
 
-// const emailRaw = JSON.parse(localStorage.getItem("userData"))?.email;
-// // 解包獲取純字符串
-// const email = emailRaw?.S || emailRaw;
-
-// console.log("解包後的 email:", email); // 應該是純字符串
+const emailRaw = JSON.parse(localStorage.getItem("userData"))?.email;
+console.log("使用的 emailRaw:", emailRaw); //使用的 emailRaw: {S: 'aaa@mail.com'}
+const email = emailRaw?.S || emailRaw;
+console.log("使用的 email:", email); //使用的 email: aaa@mail.com
 
 
   const handleSaveRecord = async () => {
-    const emailRaw = JSON.parse(localStorage.getItem("userData"))?.email;
-    const email = emailRaw?.S || emailRaw;
-    console.log("使用的 email:", email);
+    // const emailRaw = JSON.parse(localStorage.getItem("userData"))?.email;
+    // console.log("使用的 emailRaw:", emailRaw); //使用的 emailRaw: {S: 'aaa@mail.com'}
+    // const email = emailRaw?.S || emailRaw;
+    // console.log("使用的 email:", email); //使用的 email: aaa@mail.com
     const userID = "exampleUser"; // 替換為當前用戶的 ID
     const today = new Date().toISOString().split("T")[0]; // 獲取今天日期
 
