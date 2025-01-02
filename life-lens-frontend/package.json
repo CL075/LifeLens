@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.709.0",
+    "@aws-sdk/client-dynamodb": "^3.716.0",
     "@aws-sdk/s3-request-presigner": "^3.717.0",
     "chart.js": "^4.4.7",
     "cra-template": "1.2.0",
