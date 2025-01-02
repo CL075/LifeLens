@@ -24,12 +24,14 @@ const Login = () => {
       if (!isPasswordValid) {
         setErrorMessage("帳號或密碼錯誤");
       } else {
-        // 保存登录状态
+      // 登入成功，儲存登入狀態和用戶資料
       localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userData", JSON.stringify(user)); // 存储用户数据
+      localStorage.setItem("userData", JSON.stringify(user)); // 儲存用戶資料
+
       alert("登入成功！");
-      // 跳转到主页
-      window.location.href = "/dashboard";
+      
+      // 跳轉至主頁（使用 React Router 的導航功能）
+      window.location.href = "/diary"; // 或使用 navigate("/dashboard");
       }
     } catch (error) {
       console.error("登入失敗:", error);

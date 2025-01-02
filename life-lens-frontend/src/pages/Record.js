@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { addEntry } from "../utils/dynamoDB"; // 新增
+import { getUserIDByEmail, addEntry } from "../utils/dynamoDB"; // 新增
 import s3Client from "../utils/awsClient"; // 引入共享的 S3 客户端
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import {  GetObjectCommand } from "@aws-sdk/client-s3";
@@ -15,6 +15,7 @@ const Record = () => {
   const [amount, setAmount] = useState("");
   const [calories, setCalories] = useState("");
   const [transactionType, setTransactionType] = useState("income");
+
 
 
   const today = new Date().toLocaleDateString("zh-TW");
@@ -76,8 +77,14 @@ async function getPresignedUrl(fileName) {
 }
 
   const handleSaveRecord = async () => {
+    const email = JSON.parse(localStorage.getItem("userData"))?.email; // 從 localStorage 獲取 email
     const userID = "exampleUser"; // 替換為當前用戶的 ID
     const today = new Date().toISOString().split("T")[0]; // 獲取今天日期
+
+    if (!email) {
+      alert("無法獲取用戶的 email，請重新登入！");
+      return;
+    }
 
     // 如果有圖片，先上傳圖片並獲取 URL
     let imageFileName = null;
@@ -104,10 +111,12 @@ async function getPresignedUrl(fileName) {
         amount: amount || null,
         image: imageFileName, // 保存圖片 URL
     });
+
+    
     
   
     try {
-      await addEntry(userID, today, "record", content); // 將數據保存到 DynamoDB
+      await addEntry(userID, email, today, "record", content); // 將數據保存到 DynamoDB
       alert("記錄已成功保存！");
       // 重置輸入框
       setMood("");

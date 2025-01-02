@@ -1,15 +1,22 @@
 import React from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar"; // 引入 Navbar
 import Footer from "../components/Footer"; // 引入 Footer
 
 const Home = () => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
-  const userData = JSON.parse(localStorage.getItem("userData"));
+  // const isLoggedIn = localStorage.getItem("isLoggedIn");
+  // const userData = JSON.parse(localStorage.getItem("userData"));
 
-  if (!isLoggedIn) {
-    window.location.href = "/login"; // 未登录则跳转到登录页
-  }
+  // if (!isLoggedIn) {
+  //   window.location.href = "/login"; // 未登录则跳转到登录页
+  // }
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+    if (!isLoggedIn) {
+      window.location.href = "/login"; // 若未登入，跳轉至登入頁
+    }
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 px-4 sm:px-6 md:px-8">
@@ -24,7 +31,6 @@ const Home = () => {
           Life Lens
           是一個幫助你追蹤生活習慣、分析趨勢並改善生活品質的工具。隨時了解你的日常行為，並提升自我。
         </p>
-        <p>歡迎, {userData?.username || "用户"}!</p>
       </div>
     </div>
   );

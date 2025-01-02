@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { addUser, queryUserByUsername, queryUserByEmail } from "../utils/dynamoDB"; // 引入 DynamoDB 工具
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from 'bcryptjs'; // 引入 bcrypt
+import { useNavigate } from "react-router-dom";
+
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -11,6 +13,8 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const navigate = useNavigate();
 
   // 模擬註冊處理
   const handleSubmit = async (event) => {
@@ -42,7 +46,8 @@ const Signup = () => {
         const userID = uuidv4();
         await addUser(userID, username, email, hashedPassword);
         alert("註冊成功！");
-        // 可跳轉到登入頁面
+        // 跳轉到登入頁面
+        navigate("/login");
       } catch (error) {
         console.error("註冊失敗:", error);
         setErrorMessage("系統錯誤，請稍後再試");

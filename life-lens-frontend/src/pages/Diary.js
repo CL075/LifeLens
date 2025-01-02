@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useEffect } from "react"; // 新增
-import { queryEntries } from "../utils/dynamoDB"; // 新增
+import { queryEntries, queryEntriesByEmail, getEmailByUserID, } from "../utils/dynamoDB"; // 新增
 import s3Client from "../utils/awsClient"; // 引入共享的 S3 客户端
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -17,45 +17,96 @@ const getOneYearAgoDate = () => {
   return today.toISOString().split("T")[0]; // 格式化為 YYYY-MM-DD
 };
 
-const Diary = () => {
+const Diary = ({ userID }) => {
   const [selectedEntryID, setSelectedEntryID] = useState(null); // 替換 selectedDate 為 entryID
   const [showTimeCapsule, setShowTimeCapsule] = useState(false); // 用來控制顯示時光膠囊紀錄
   const [showModal, setShowModal] = useState(false); // 控制彈跳視窗顯示
   const [timeCapsuleRecord, setTimeCapsuleRecord] = useState(null); // 用來存儲一年前的紀錄
-  
-  const [records, setRecords] = useState([
-  //   {
-  //     date: "2024/12/01",
-  //     mood: "happy",
-  //     note: "今天很開心，去了公園散步。",
-  //     exercise: "跑步",
-  //     exerciseDetails: "跑了5公里",
-  //     calories: "500",
-  //     amount: "1000",
-  //     transactionType: "income",
-  //   },
-  //   {
-  //     date: "2023/12/10",
-  //     mood: "happy",
-  //     note: "今天心情好，工作有點壓力。",
-  //     exercise: "游泳",
-  //     exerciseDetails: "游了50分鐘",
-  //     calories: "600",
-  //     amount: "300",
-  //     transactionType: "expense",
-  //   },
-  //   {
-  //     date: "2023/12/09",
-  //     mood: "unhappy",
-  //     note: "今天心情不太好，工作有點壓力。",
-  //     exercise: "游泳",
-  //     exerciseDetails: "游了30分鐘",
-  //     calories: "400",
-  //     amount: "200",
-  //     transactionType: "expense",
-  //   },
-  ]);
+  const [email, setEmail] = useState(""); // 保存用戶 email 的狀態
+  const [records, setRecords] = useState([]);
 
+  useEffect(() => {
+    const fetchEmailAndRecords = async () => {
+      try {
+        // 步驟 1：從 UsersTable 查詢 email
+        console.log("正在查詢的 userID:", userID);
+        const fetchedEmail = await getEmailByUserID(userID);
+        console.log("獲取到的 email:", fetchedEmail);
+        setEmail(fetchedEmail);
+
+        // 步驟 2：基於 email 查詢日記資料
+        const fetchedRecords = await queryEntriesByEmail(fetchedEmail);
+        console.log("查詢到的日記資料:", fetchedRecords);
+
+        // 過濾結果，確保每條記錄屬於該 email
+        const filteredRecords = fetchedRecords.filter(
+          (record) => record.email.S === fetchedEmail
+        );
+
+        // 處理數據
+        setRecords(
+          filteredRecords.map((record) => ({
+            entryID: record.entryID.S,
+            date: record.date.S,
+            note: record.content ? JSON.parse(record.content.S).note : "",
+          }))
+        );
+      } catch (error) {
+        console.error("查詢過程中出錯：", error);
+        setRecords([]);
+      }
+    };
+
+    fetchEmailAndRecords();
+  }, [userID]);
+
+  useEffect(() => {
+    // ** 步驟 2：基於 email 查詢日記資料 **
+    const fetchRecordsByEmail = async () => {
+      if (!email) return; // 如果 email 尚未獲取，不執行查詢
+      try {
+        const data = await queryEntriesByEmail(email); // 使用基於 email 的查詢函數
+        console.log("查詢到的日記資料：", data);
+
+        // 轉換並處理查詢結果
+        const transformedData = await Promise.all(
+          data.map(async (record) => {
+            try {
+              const content = JSON.parse(record.content.S || "{}");
+
+              // 動態生成預簽名 URL（如果有圖片）
+              const presignedUrl = content.image
+                ? await getPresignedUrl(content.image)
+                : null;
+
+              return {
+                entryID: record.entryID.S,
+                date: record.date.S,
+                mood: content.mood || "neutral",
+                note: content.note || "",
+                exercise: content.exercise || "無運動",
+                exerciseDetails: content.exerciseDetails || "",
+                calories: parseFloat(content.calories || 0),
+                amount: parseFloat(content.amount || 0),
+                transactionType: content.transactionType || "expense",
+                image: presignedUrl,
+              };
+            } catch (error) {
+              console.error("解析記錄失敗：", error);
+              return null;
+            }
+          })
+        );
+
+        setRecords(transformedData.filter((record) => record)); // 過濾掉無效記錄
+      } catch (error) {
+        console.error("查詢日記資料失敗：", error);
+        setRecords([]); // 若查詢失敗，設置為空數組
+      }
+    };
+
+    fetchRecordsByEmail();
+  }, [email]); // 當 email 改變時重新查詢
 
 
 useEffect(() => {
