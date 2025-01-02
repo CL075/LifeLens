@@ -86,5 +86,84 @@ export async function getEntryByID(entryID) {
     }
 }
 
+export async function queryUserByAttribute(attribute, value) {
+    const params = {
+        TableName: "UsersTable", // 替換為用戶表名
+        IndexName: `${attribute}-index`, // 假設為每個屬性建立了索引
+        KeyConditionExpression: `${attribute} = :value`,
+        ExpressionAttributeValues: {
+            ":value": { S: value },
+        },
+    };
+
+    try {
+        const data = await dynamoDBClient.send(new QueryCommand(params));
+        console.log(`Query result for ${attribute}:`, data.Items);
+        return data.Items || [];
+    } catch (err) {
+        console.error(`Error querying ${attribute}:`, err);
+        return [];
+    }
+}
+
+export async function addUser(userID, username, email, pwHash) {
+    const params = {
+        TableName: "UsersTable",
+        Item: {
+            userID: { S: userID },
+            username: { S: username },
+            email: { S: email },
+            pwHash: { S: pwHash },
+            createdAt: { S: new Date().toISOString() },
+            updatedAt: { S: new Date().toISOString() },
+        },
+    };
+
+    try {
+        const data = await dynamoDBClient.send(new PutItemCommand(params));
+        console.log("User added successfully:", data);
+    } catch (err) {
+        console.error("Error adding user:", err);
+    }
+}
+
+export async function queryUserByUsername(username) {
+    const params = {
+        TableName: "UsersTable",
+        IndexName: "username-index",
+        KeyConditionExpression: "username = :username",
+        ExpressionAttributeValues: {
+            ":username": { S: username },
+        },
+    };
+
+    try {
+        const data = await dynamoDBClient.send(new QueryCommand(params));
+        return data.Items || [];
+    } catch (err) {
+        console.error("Error querying username:", err);
+        return [];
+    }
+}
+
+export async function queryUserByEmail(email) {
+    const params = {
+        TableName: "UsersTable",
+        IndexName: "email-index",
+        KeyConditionExpression: "email = :email",
+        ExpressionAttributeValues: {
+            ":email": { S: email },
+        },
+    };
+
+    try {
+        const data = await dynamoDBClient.send(new QueryCommand(params));
+        return data.Items || [];
+    } catch (err) {
+        console.error("Error querying email:", err);
+        return [];
+    }
+}
+
 
 
