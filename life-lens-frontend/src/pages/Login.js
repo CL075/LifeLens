@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import bcrypt from 'bcrypt'; // 引入 bcrypt
-import { queryUserByAttribute  } from "./dynamoDB"; // 確保可以查詢用戶
+import { queryUserByUsername  } from "../utils/dynamoDB"; // 確保可以查詢用戶
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -25,25 +25,25 @@ const Login = () => {
     event.preventDefault();
 
     try {
-        // 查詢用戶
-        const userRecords = await queryUserByAttribute("username", username);
-        if (userRecords.length === 0) {
-            setErrorMessage("帳號或密碼錯誤");
-            return;
-        }
+      const userRecords = await queryUserByUsername(username);
+      if (userRecords.length === 0) {
+        setErrorMessage("帳號或密碼錯誤");
+        return;
+      }
 
-        const user = userRecords[0];
-        const isPasswordValid = await bcrypt.compare(password, user.passwordHash.S);
-        if (!isPasswordValid) {
-            setErrorMessage("帳號或密碼錯誤");
-        } else {
-            alert("登入成功！");
-        }
+      const user = userRecords[0];
+      const isPasswordValid = await bcrypt.compare(password, user.pwHash.S);
+      if (!isPasswordValid) {
+        setErrorMessage("帳號或密碼錯誤");
+      } else {
+        alert("登入成功！");
+        // 可跳轉到主頁
+      }
     } catch (error) {
-        console.error("登入失敗:", error);
-        setErrorMessage("系統錯誤，請稍後再試");
+      console.error("登入失敗:", error);
+      setErrorMessage("系統錯誤，請稍後再試");
     }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600">
