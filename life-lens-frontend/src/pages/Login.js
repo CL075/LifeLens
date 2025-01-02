@@ -24,8 +24,12 @@ const Login = () => {
       if (!isPasswordValid) {
         setErrorMessage("帳號或密碼錯誤");
       } else {
-        alert("登入成功！");
-        // 可跳轉到主頁
+        // 保存登录状态
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userData", JSON.stringify(user)); // 存储用户数据
+      alert("登入成功！");
+      // 跳转到主页
+      window.location.href = "/dashboard";
       }
     } catch (error) {
       console.error("登入失敗:", error);

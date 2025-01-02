@@ -37,30 +37,60 @@ const Profile = () => {
     setIsEditing(!isEditing);
   };
 
+  // const handleFormSubmit = (e) => {
+  //   e.preventDefault();
+  //   // 在這裡處理用戶更新邏輯（例如，更新用戶名、密碼等）
+  //   setUser((prevUser) => ({
+  //     ...prevUser,
+  //     username: newUsername,
+  //     email: newEmail,
+  //   }));
+  //   setIsEditing(false); // 提交後關閉編輯表單
+  // };
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // 在這裡處理用戶更新邏輯（例如，更新用戶名、密碼等）
-    setUser((prevUser) => ({
-      ...prevUser,
+  
+    // 更新用户数据
+    const updatedUser = {
+      ...user,
       username: newUsername,
       email: newEmail,
-    }));
-    setIsEditing(false); // 提交後關閉編輯表單
-  };
-
-  useEffect(() => {
-    // 獲取當前用戶資料
-    const fetchUserData = async () => {
-      try {
-        // const userData = await Auth.currentAuthenticatedUser();
-        // setUser(userData);
-      } catch (error) {
-        console.error("無法獲取用戶資料", error);
-      }
     };
+  
+    setUser(updatedUser);
+  
+    // 更新 localStorage
+    localStorage.setItem("userData", JSON.stringify(updatedUser));
+  
+    setIsEditing(false); // 关闭编辑表单
+  };
+  
 
-    fetchUserData();
+  // useEffect(() => {
+  //   // 獲取當前用戶資料
+  //   const fetchUserData = async () => {
+  //     try {
+  //       // const userData = await Auth.currentAuthenticatedUser();
+  //       // setUser(userData);
+  //     } catch (error) {
+  //       console.error("無法獲取用戶資料", error);
+  //     }
+  //   };
+
+  //   fetchUserData();
+  // }, []);
+  useEffect(() => {
+    // 从 localStorage 获取用户数据
+    const savedUser = JSON.parse(localStorage.getItem("userData"));
+    if (savedUser) {
+      setUser({
+        username: savedUser.username.S,
+        email: savedUser.email.S,
+        picture: savedUser.picture || "https://via.placeholder.com/150",
+      });
+    }
   }, []);
+  
 
   return (
     <div className="container mx-auto mt-10 px-4">
