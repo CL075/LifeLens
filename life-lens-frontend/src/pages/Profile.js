@@ -26,6 +26,18 @@ const Profile = () => {
     }
   }
   
+  useEffect(() => {
+    // 从 localStorage 获取用户数据
+    const savedUser = JSON.parse(localStorage.getItem("userData"));
+    if (savedUser) {
+      setUser({
+        username: savedUser.username,
+        email: savedUser.email,
+        picture: savedUser.picture || "https://via.placeholder.com/150",
+      });
+    }
+  }, []);
+  
   const handleSave = async () => {
     try {
       const updatedData = {
@@ -52,11 +64,11 @@ const Profile = () => {
         const userInfo = userData[0];
         setUser({
           username: userInfo.username.S,
-          email: userInfo.email.S,
+          email: userInfo.email,
           picture: userInfo.picture || "https://via.placeholder.com/150",
         });
         setNewUsername(userInfo.username.S);
-        setNewEmail(userInfo.email.S);
+        setNewEmail(userInfo.email);
       }
     };
 
@@ -106,17 +118,7 @@ const Profile = () => {
   };
   
 
-  useEffect(() => {
-    // 从 localStorage 获取用户数据
-    const savedUser = JSON.parse(localStorage.getItem("userData"));
-    if (savedUser) {
-      setUser({
-        username: savedUser.username.S,
-        email: savedUser.email.S,
-        picture: savedUser.picture || "https://via.placeholder.com/150",
-      });
-    }
-  }, []);
+  
   
 
   return (

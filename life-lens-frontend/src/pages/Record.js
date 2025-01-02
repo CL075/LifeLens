@@ -76,8 +76,17 @@ async function getPresignedUrl(fileName) {
     }
 }
 
+// const emailRaw = JSON.parse(localStorage.getItem("userData"))?.email;
+// // 解包獲取純字符串
+// const email = emailRaw?.S || emailRaw;
+
+// console.log("解包後的 email:", email); // 應該是純字符串
+
+
   const handleSaveRecord = async () => {
-    const email = JSON.parse(localStorage.getItem("userData"))?.email; // 從 localStorage 獲取 email
+    const emailRaw = JSON.parse(localStorage.getItem("userData"))?.email;
+    const email = emailRaw?.S || emailRaw;
+    console.log("使用的 email:", email);
     const userID = "exampleUser"; // 替換為當前用戶的 ID
     const today = new Date().toISOString().split("T")[0]; // 獲取今天日期
 
@@ -110,6 +119,13 @@ async function getPresignedUrl(fileName) {
         transactionType,
         amount: amount || null,
         image: imageFileName, // 保存圖片 URL
+    })
+    console.log("保存的數據內容：", {
+      userID,
+      email,
+      date: today,
+      entryType: "record",
+      content,
     });
 
     
