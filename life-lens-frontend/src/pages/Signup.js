@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaUserAlt, FaEnvelope, FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { addEntry, queryEntries  } from "./dynamoDB"; // 引入 DynamoDB 工具
+import { addEntry, queryUserByAttribute   } from "./dynamoDB"; // 引入 DynamoDB 工具
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from 'bcrypt'; // 引入 bcrypt
 
