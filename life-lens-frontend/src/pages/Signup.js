@@ -22,13 +22,6 @@ const Signup = () => {
       return;
     }
 
-    // 假設的註冊邏輯
-    // if (username && email && password) {
-    //   alert("註冊成功!");
-    //   // 跳轉到登入頁面，這裡可以使用 `useNavigate` 或其他路由工具
-    // } else {
-    //   setErrorMessage("請填寫所有欄位");
-    // }
     if (username && email && password) {
       try {
         const existingUsers = await queryUserByUsername(username);
