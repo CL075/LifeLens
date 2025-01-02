@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import bcrypt from 'bcrypt'; // 引入 bcrypt
-import { queryEntries } from "./dynamoDB"; // 確保可以查詢用戶
+import { queryUserByAttribute  } from "./dynamoDB"; // 確保可以查詢用戶
 
 const Login = () => {
   const [username, setUsername] = useState("");
