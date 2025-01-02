@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaUserAlt, FaEnvelope, FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { addEntry, queryUserByAttribute   } from "./dynamoDB"; // 引入 DynamoDB 工具
+import { addUser, queryUserByUsername, queryUserByEmail } from "../utils/dynamoDB"; // 引入 DynamoDB 工具
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from 'bcrypt'; // 引入 bcrypt
 
@@ -31,37 +31,32 @@ const Signup = () => {
     // }
     if (username && email && password) {
       try {
-          // 查詢是否有重複的 username 或 email
-          const existingUsers = await queryUserByAttribute("username", username);
-          if (existingUsers.length > 0) {
-              setErrorMessage("此帳號已被使用");
-              return;
-          }
+        const existingUsers = await queryUserByUsername(username);
+        if (existingUsers.length > 0) {
+          setErrorMessage("此帳號已被使用");
+          return;
+        }
 
-          const existingEmails = await queryUserByAttribute("email", email);
-          if (existingEmails.length > 0) {
-              setErrorMessage("此電子郵件已被使用");
-              return;
-          }
+        const existingEmails = await queryUserByEmail(email);
+        if (existingEmails.length > 0) {
+          setErrorMessage("此電子郵件已被使用");
+          return;
+        }
 
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-          // 加密密碼
-          const saltRounds = 10;
-          const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-          const userID = uuidv4();
-          const date = new Date().toISOString();
-
-          // 儲存用戶資料
-          await addEntry(userID, date, "registration", JSON.stringify({ username, email, passwordHash: hashedPassword }));
-          alert("註冊成功！");
+        const userID = uuidv4();
+        await addUser(userID, username, email, hashedPassword);
+        alert("註冊成功！");
+        // 可跳轉到登入頁面
       } catch (error) {
-          console.error("註冊失敗:", error);
-          setErrorMessage("系統錯誤，請稍後再試");
+        console.error("註冊失敗:", error);
+        setErrorMessage("系統錯誤，請稍後再試");
       }
-  } else {
+    } else {
       setErrorMessage("請填寫所有欄位");
-  }
+    }
   };
 
   return (
