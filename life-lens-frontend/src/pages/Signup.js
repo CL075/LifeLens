@@ -3,7 +3,7 @@ import { FaUserAlt, FaEnvelope, FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { addUser, queryUserByUsername, queryUserByEmail } from "../utils/dynamoDB"; // 引入 DynamoDB 工具
 import { v4 as uuidv4 } from "uuid";
-import bcrypt from 'bcrypt'; // 引入 bcrypt
+import bcrypt from 'bcryptjs'; // 引入 bcrypt
 
 const Signup = () => {
   const [username, setUsername] = useState("");
