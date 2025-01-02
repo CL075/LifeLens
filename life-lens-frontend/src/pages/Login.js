@@ -9,18 +9,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // 模擬登入處理
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-
-  //   // 假設的登入邏輯
-  //   if (username === "admin" && password === "12345") {
-  //     alert("登入成功!");
-  //     // 跳轉到主頁面，這裡可以使用 `useNavigate` 或其他路由工具
-  //   } else {
-  //     setErrorMessage("用戶名或密碼錯誤");
-  //   }
-  // };
   const handleSubmit = async (event) => {
     event.preventDefault();
 
