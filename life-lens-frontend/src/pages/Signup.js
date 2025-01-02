@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { FaUserAlt, FaEnvelope, FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { addEntry, queryEntries  } from "./dynamoDB"; // 引入 DynamoDB 工具
+import { v4 as uuidv4 } from "uuid";
+import bcrypt from 'bcrypt'; // 引入 bcrypt
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -10,7 +13,7 @@ const Signup = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   // 模擬註冊處理
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     // 檢查密碼是否匹配
@@ -20,12 +23,45 @@ const Signup = () => {
     }
 
     // 假設的註冊邏輯
+    // if (username && email && password) {
+    //   alert("註冊成功!");
+    //   // 跳轉到登入頁面，這裡可以使用 `useNavigate` 或其他路由工具
+    // } else {
+    //   setErrorMessage("請填寫所有欄位");
+    // }
     if (username && email && password) {
-      alert("註冊成功!");
-      // 跳轉到登入頁面，這裡可以使用 `useNavigate` 或其他路由工具
-    } else {
+      try {
+          // 查詢是否有重複的 username 或 email
+          const existingUsers = await queryUserByAttribute("username", username);
+          if (existingUsers.length > 0) {
+              setErrorMessage("此帳號已被使用");
+              return;
+          }
+
+          const existingEmails = await queryUserByAttribute("email", email);
+          if (existingEmails.length > 0) {
+              setErrorMessage("此電子郵件已被使用");
+              return;
+          }
+
+
+          // 加密密碼
+          const saltRounds = 10;
+          const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+          const userID = uuidv4();
+          const date = new Date().toISOString();
+
+          // 儲存用戶資料
+          await addEntry(userID, date, "registration", JSON.stringify({ username, email, passwordHash: hashedPassword }));
+          alert("註冊成功！");
+      } catch (error) {
+          console.error("註冊失敗:", error);
+          setErrorMessage("系統錯誤，請稍後再試");
+      }
+  } else {
       setErrorMessage("請填寫所有欄位");
-    }
+  }
   };
 
   return (
