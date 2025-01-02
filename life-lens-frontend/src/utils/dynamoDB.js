@@ -6,9 +6,9 @@ const REGION = "us-east-1"; // 替换为您的区域
 const dynamoDBClient = new DynamoDBClient({
     region: REGION,
     credentials: {
-        accessKeyId: "ASIAXTKEZOTGE4CL67D7", // 替换为您的 Access Key ID
-        secretAccessKey: "O0gPh69diU1bp2NZ0yp2bfkTSbVSySROx1u+W8Ys", // 替换为您的 Secret Access Key
-        sessionToken: "IQoJb3JpZ2luX2VjEPn//////////wEaCXVzLXdlc3QtMiJIMEYCIQDy7IDV+DIyXwUYLrrJt/U9qSmZfkQdsoP3Ur9PwURzlAIhAPW+l96HSHXCyzbiDOdYhdQ17yAWBoqShBiwTVTFMkeLKroCCNL//////////wEQARoMNTIyNTE5NjcyMDEyIgzj600Nl2HYZ3x+IoUqjgIfJzYzFXQhw8vxNsb7PMvRV1bM9VuhkcEJgAYaJP3uIMVc9r+R869ZozKFKr44ppWms/C1DbR7+zUE3uiCiswgTdabgPSJ1S7+uw9kCXxwR3ZKkJ3/DtNvPL5uS5L9Mf3Fb2Xk+0Cg5du5sslzeMJtLuoe7FawKheNpRFiNwH/E8/dqncsq3YJdBRP9GvmHnITyq/JXPw03fbJUlLSimYmvzFuPLb2X4sKvzqoE3Xcw+NePJ2eZKkyyJkZjUDQ3f5Wn4I8mCqwJdXYzM90Op899gcZhNr5+V8hZAEvqcFKgMink+bukhXUpU5SiNCjxbRlPcf0dgNEnwim+SMXxlm1DBtnsnVOcKEcTt0o/JYwup/ZuwY6nAEGtfAQISvaFt1wp2F9PjkPW/nQABwndU6anHbAd2jHl5VWJsKJKNoGoJcIWGhG9Or+Y2D4lnLzoy+VroGWoZXgLCUE0rsqmRTMLOU95kBZ9UWowDroKvGLJwh9VNVAh1B7o0omnnOB0YK3LjIb5Lj2Mrc3M7JnbmOl8ZdOAqp24Ij83PUYRAgXoEWlLYIn8OP/IzgRHJpadxAsE7s=", // 替换为您的 Session Token
+        accessKeyId: "ASIAZ3TE2CMVA65SERHS", // 替换为您的 Access Key ID
+        secretAccessKey: "ya9hLMBqXe2NMpatDViGKxg0u9nGLmHznfrMPMj0", // 替换为您的 Secret Access Key
+        sessionToken: "IQoJb3JpZ2luX2VjEP3//////////wEaCXVzLXdlc3QtMiJHMEUCICEhE7UtEUqHGOIuv8dJ3dY7bLDXcIQ5Er6ybSjRiDyqAiEA7QbZq060owMwj/fYc1+FdzI4JUCcIItGCxucNlCVFRAqugII1v//////////ARAAGgw2Nzc3NDI1MTQ5ODYiDIf3LuNy59Y6Y+UMBCqOArJVu4sUD8DRY+rcbJDLmY5LgqD1O0Urhe/extdOvxGsvRCI5jp4vY/Ykey6wBTdT+hc0xVkeNbGm0vkGf1qSvygZeWE5N0u9RxYz7LEnVwiHomjcWWZDHff4OoeXVfIAZozPGUak1fKZxZohA29tMfzSGx9L48ktjmM2dAPSThYKQuEmj2Cb1yLB5owVBvoAQJ2KQCPSHskbPkOExKyh77aLaAlLseHa+18JY6e4igdVeu6tC3OuDkgZ0j3ZbjVxOeD+57aAZNmDbw5XLDNk0jDXFK4r80ecQrH9JlSc8WEcvdkhJdvNpIoymsj+YxaeQ5xu/H3il59mq+pc2nUFthadZA8wPzZHMENPClbRzCMjNq7BjqdAU1VDtjr5tXRHSfBoSytfGnad6AaMY46T3sbz/zeG4O1GOpbpb0aXx2Zoon2ffgVjpO/f7jjHCUa+RQyPWfRuD68wEfp2gTc6N+MxN2XWD+YEfloPKxFaQA8glzbBxQVUApqp8nCBT/If7vtED1JtOsjlQIiWec5Lf8iLRBjjGt246QjEC8oXKEhsjPOwC94DJPZxPkxBgqJuMK72Gg=", // 替换为您的 Session Token
     },
 });
 
