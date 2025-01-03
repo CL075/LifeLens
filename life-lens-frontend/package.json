@@ -5,6 +5,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.709.0",
     "@aws-sdk/s3-request-presigner": "^3.717.0",
+    "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.7",
     "cra-template": "1.2.0",

@@ -6,9 +6,9 @@ const REGION = "us-east-1"; // 替换为您的区域
 const dynamoDBClient = new DynamoDBClient({
     region: REGION,
     credentials: {
-    accessKeyId: "ASIA27HET6GPQZAARMDH", // 替换为您的 Access Key ID
-    secretAccessKey: "y29Wn4w1PvG+3FbcdAMrGwBwWzfz1DXQstHHGEQt", // 替换为您的 Secret Access Key
-    sessionToken: "IQoJb3JpZ2luX2VjEBQaCXVzLXdlc3QtMiJIMEYCIQCjxoLkT91Lyt5UCzXfaSIgd0b/36B9pzKH++CuWx+B9QIhANjj24A6+suIU5ehZNHaISEbSZS5LQElM0d6rH+yPBEVKroCCO3//////////wEQARoMNzU0MjQ2MjE4MTQzIgxKYMaiY9S10SkybZ8qjgJaOPvZnTRYmiY1IdIXP7xnM9NcdJdgtk3oEgC6+er39bkwYY/I3vpO3Byb7VkaOdFeUvVF3aAzn9W4AK9cVOlZnnKEVBYDAsgtUcfKsBjgDj3FvVYr4eVDZ7N6QGe+/9q4lqVEwFp+BuEdldg2hzvV0t6g1IOD42FGJ+IQse9t+mgAanzqbVM1vwWMCmHZLmCYgNQU5AEdKwDN96K/g1h2ljmxZN6sf0DSxeHkkR1dhZrmYYdbWQc+x2eZXManHnk1wIBJsEDH9lsrG4GUM9MZ0hvbTb946ArMQSdEv45EMMVRTQl0g9eO/6bRvzF74mrR4sxUbZTW9FjtLHmuhsyEmwD3659CHgR0Dr43hjcwo6TfuwY6nAGv50AqBUpiwS7jv4eXX10ivi8r0HTaUTLBBy8oV82qsPYuDMelPHt8bkcASQ6JFpqcLHjdRhcmctIHBx8E9V+eGhM3ogJskIAKCeUXmQrY420s+uW5GDIF1LBz6es87a2lZ6sT96WuBim2z1G7jmqr9waln/ABvRD4dGP1BtBxbU6oyZKC3K5h6ynXkNKCbOwvdUN043ExdrOVp/c=", // 替换为您的 Session Token    },
+    accessKeyId: "ASIAXTKEZOTGKD67ER6Z", // 替换为您的 Access Key ID
+    secretAccessKey: "McciScFA6VtDIc5kWcUGKbkPKJXqCceddjQnjOHn", // 替换为您的 Secret Access Key
+    sessionToken: "IQoJb3JpZ2luX2VjEBoaCXVzLXdlc3QtMiJIMEYCIQCBPFvVupdgCY/LtF9TIDkYKM18TzxArqwvnlQTGkuSiAIhAMOgGPEH9I/T/4mOtZqAcnBUflY7yLJ4TXV9Y5BiUPZ8KroCCPP//////////wEQARoMNTIyNTE5NjcyMDEyIgwACANkIE/AH2jREQIqjgJEAZUzz6aUxU6QQsAclN3/JzUNQOMy5PYeoNZaN3PvPsqbrIdpc6TMHgOR60XQfqzcqFkqlt3Z1WMPqw6OwMSmXjpjCFol6oI6Q6Bq1biBIxAbIbZtds8dS3fXg1XknzkF9msga8KmuGD79J6qmlPdkzzmV3zgED5Vg2BPE8179iyi5zM1Kk5ykBMAlw6yKppmSmwJeiPVo47L7dSLJLbZ568fRNkTH76m34czvzrz+xBc/wo/pQUpej7QDpYjlc1pPDZplZksEjxL9SJEohueykSepUsgvFgAtrChEic6dxyZ3uT8yPpFc8Kt6bg6Ssy/oeaYVfBbSk6bdIVUe9lOwGUgubma/sMK/zC1/r4w6MbguwY6nAH8lXdRcNZ+plG/Khss+dSz7Bj9DYgPHPHNAgj69gleN3V5QKDYqeOOrh5gMsCy9bshMbd9WwzHreJNGre3IF8wzSNlxGZx0CnVIcUGtojHKh7EjAxchLlpyA8CWf9aFFNGy9W448S/NxVIcCQR+rSkgiMi1ECKsmA/C8L0cZwmJPHapiE3pBAaNLS1jOX25jnLYfDW0Tm2mgwxtsU=", // 替换为您的 Session Token    },
     },
     // logger: console, // 啟用調試日誌
 });
