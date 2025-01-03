@@ -13,7 +13,6 @@ const Profile = () => {
   // 控制編輯表單顯示的狀態
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState("");
-  const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
   async function updateUser(username, updatedData) {
@@ -46,12 +45,28 @@ const Profile = () => {
   
   const handleSave = async () => {
     try {
-      const updatedData = {
-        email: newEmail,
-        ...(newPassword && { pwHash: await bcrypt.hash(newPassword, 10) }), // 加密新密碼
+      // 構造更新數據
+      const updatedUser = {
+        username: newUsername,
       };
   
-      await updateUser(user.username, updatedData); // 調用更新函式
+      // 如果有新密碼，進行加密處理
+      if (newPassword) {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        updatedUser.pwHash = hashedPassword;
+      }
+  
+      console.log("提交的更新數據:", updatedUser);
+  
+      // 調用更新後端資料的函數
+      await updateUser(user.username, updatedUser);
+  
+      // 更新本地狀態
+      setUser((prevUser) => ({
+        ...prevUser,
+        username: newUsername,
+      }));
+  
       alert("資料已更新！");
       toggleEditForm(); // 關閉編輯表單
     } catch (error) {
@@ -59,6 +74,7 @@ const Profile = () => {
       alert("更新失敗，請稍後再試！");
     }
   };
+  
   
 
   useEffect(() => {
@@ -74,7 +90,6 @@ const Profile = () => {
           picture: userInfo.picture?.S || userInfo.picture || "https://via.placeholder.com/150",
         });
         setNewUsername(userInfo.username.S);
-        setNewEmail(userInfo.email?.S || userInfo.email);
       }
     };
 
@@ -114,7 +129,6 @@ const Profile = () => {
     const updatedUser = {
       ...user,
       username: newUsername,
-      email: typeof newEmail === "object" ? newEmail.S : newEmail, // 確保 email 是字符串
     };
   
     setUser(updatedUser);
@@ -169,13 +183,12 @@ const Profile = () => {
       {isEditing && (
         <EditForm
           newUsername={newUsername}
-          newEmail={newEmail}
           newPassword={newPassword}
           setNewUsername={setNewUsername}
-          setNewEmail={setNewEmail}
           setNewPassword={setNewPassword}
           toggleEditForm={toggleEditForm}
           setUser={setUser}
+          handleSave={handleSave} // 將 handleSave 傳遞到子組件
         />
       )}
     </div>
@@ -185,45 +198,13 @@ const Profile = () => {
 // 編輯表單元件
 const EditForm = ({
   newUsername,
-  newEmail,
   newPassword,
   setNewUsername,
-  setNewEmail,
   setNewPassword,
   toggleEditForm,
   setUser,
+  handleSave,
 }) => {
-  const handleSave = async () => {
-    try {
-      const updatedUser = {
-        username: newUsername,
-        email: typeof newEmail === "object" ? newEmail.S : newEmail, // 解包多層結構
-      };
-
-      // 如果密碼有更改，進行加密並添加到更新內容
-      if (newPassword) {
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-        updatedUser.pwHash = hashedPassword;
-      }
-
-      // 更新資料庫
-      await updateUserData(updatedUser);
-
-      // 更新本地狀態
-      setUser((prevUser) => ({
-        ...prevUser,
-        username: newUsername,
-        email: updatedUser.email,
-      }));
-
-      alert("資料已更新！");
-      toggleEditForm(); // 關閉編輯表單
-    } catch (error) {
-      console.error("更新失敗：", error);
-      alert("更新失敗，請稍後再試！");
-    }
-  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -238,7 +219,7 @@ const EditForm = ({
             className="w-full px-3 py-2 border rounded-lg"
           />
         </div>
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">電子郵件</label>
           <input
             type="email"
@@ -246,7 +227,7 @@ const EditForm = ({
             onChange={(e) => setNewEmail(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg"
           />
-        </div>
+        </div> */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">密碼 (選填)</label>
           <input
