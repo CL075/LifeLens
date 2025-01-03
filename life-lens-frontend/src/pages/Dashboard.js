@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 import { useEffect } from "react";
-import { queryEntries } from "../utils/dynamoDB"; // 新增
+import { queryEntries, queryEntriesByEmail, getEmailByUserID, } from "../utils/dynamoDB"; // 新增
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -73,42 +73,56 @@ const Dashboard = () => {
       const endDate = new Date().toISOString().split("T")[0]; // 當前日期
 
       try {
-          const data = await queryEntries(userID, startDate, endDate);
-          console.log("Query result:", data);
-
-          if (!data || !Array.isArray(data)) {
-              console.error("No data or invalid data structure");
-              setRecords([]); // 如果數據無效，設置為空數組
-              return;
-          }
-
-          const transformedData = data.map((record) => {
-            try {
-                const content = JSON.parse(record.content.S || "{}"); // 確保解析成功
-                return {
-                  entryID: record.entryID.S, // 加入 entryID
-                  date: record.date.S,
-                  mood: content.mood || "neutral",
-                  note: content.note || "",
-                  exercise: content.exercise || "無運動",
-                  exerciseDetails: content.exerciseDetails || "",
-                  calories: parseFloat(content.calories || 0),
-                  amount: parseFloat(content.amount || 0),
-                  transactionType: content.transactionType || "expense",
-                  image: content.image || null,
-                };
-            } catch (error) {
-                console.error("解析記錄失敗:", error);
-                return null; // 跳過錯誤記錄
-            }
-        }).filter((record) => record); // 過濾掉無效記錄
+              // 從 localStorage 獲取 email
+              const userData = JSON.parse(localStorage.getItem("userData"));
+              if (!userData || !userData.email) {
+                console.error("無法找到用戶 email");
+                return;
+              }
         
-
-          setRecords(transformedData); // 更新 records 為平面結構
-      } catch (error) {
-          console.error("Error fetching records:", error);
-          setRecords([]); // 發生錯誤時設置為空數組
-      }
+              const email = typeof userData.email === "object" ? userData.email.S : userData.email;
+              console.log("正在查詢的 email:", email);
+        
+              // 基於 email 查詢日記資料
+              const data = await queryEntriesByEmail(email); // 使用基於 email 的查詢函數
+              console.log("查詢到的日記資料：", data);
+        
+              // 轉換並處理查詢結果
+              const transformedData = await Promise.all(
+                data.map(async (record) => {
+                  try {
+                    console.log("處理中的記錄：", record); // 檢查每條記錄
+                    const content = JSON.parse(record.content.S || "{}");
+                    console.log("解析出的 content:", content); // 調試輸出
+        
+                    // 動態生成預簽名 URL（如果有圖片）
+                    
+        
+                    return {
+                      entryID: record.entryID.S,
+                      date: record.date.S,
+                      mood: content.mood || "neutral",
+                      note: content.note || "",
+                      exercise: content.exercise || "無運動",
+                      exerciseDetails: content.exerciseDetails || "",
+                      calories: parseFloat(content.calories || 0),
+                      amount: parseFloat(content.amount || 0),
+                      transactionType: content.transactionType || "expense",
+                      
+                    };
+                  } catch (error) {
+                    console.error("解析記錄失敗：", error);
+                    return null;
+                  }
+                })
+              );
+        
+              setRecords(transformedData.filter((record) => record)); // 過濾掉無效記錄
+              console.log("處理後的記錄列表:", transformedData);
+            } catch (error) {
+              console.error("查詢過程中出錯：", error);
+              setRecords([]);
+            }
   };
     fetchRecords();
 }, []);
