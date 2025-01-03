@@ -6,9 +6,9 @@ const REGION = "us-east-1"; // 替换为您的区域
 const dynamoDBClient = new DynamoDBClient({
     region: REGION,
     credentials: {
-        accessKeyId: "ASIAZ3TE2CMVPWKNAVEO", // 替换为您的 Access Key ID
-        secretAccessKey: "RxAcxakml7CR3hkiOkYCSyBq5hTlKtgFaTg3w5Zf", // 替换为您的 Secret Access Key
-        sessionToken: "IQoJb3JpZ2luX2VjEBcaCXVzLXdlc3QtMiJGMEQCIDtoN508Rs9HkyJde8JE6msziJ8ZVh6QmZ1RHxHikgwVAiBDVZOzhb4v8X9os8FQCFwtldXQXpWKWi+4gONwytg2Ziq6Agjw//////////8BEAAaDDY3Nzc0MjUxNDk4NiIMA02k5Km+CNcXVlxUKo4CCdvj5Af8zFRdbCm02K8cs1d+TuGs/KrAusxNg0l7AHI0AO8EMBAGHBthLnPt8ZAhGkW/5NbAKJAa6xF7X268bBZ4iQasM9YMEbBFRikWagro8QVZj2w6XsMhcEsYY2j8hfomofJymAL4/HQD1/MEluZGCheZ/khc1agydAMTMRdnwnFlV4T3jzTQ2b/BmyrX5jI2UaUwUCKbXWF/sSX+J1DRm6VvjQUWtlR7F52WkR5GRguJxaf73IEvXV7OiFquIhkSi2itkL+h9vfB/8bl76vKet2O6ZHU4Ewv7zP97IlKTBX307Gyflqj/9yyOHZvJrxU5FPgrtN8tVSZSCgcmSVqHYWClBU8rWE0IA0iMO7z37sGOp4BXZzbK/oTD/gTgzyOxC1bk06rt6Jy98lOZievK6gRAqQzz++yXOTZ5ZPAEzvbGkbjxsYusUt/k/geDjPBewhT0u6yfuPMkwB5gt35d/Ytc8mCnEp+Xk37fHEBtYSsU6/bZZN+VljdbW4rZZZH5w9s5GnT0fRSBv4D1xwidzYCtV7Cvxt1fd5sjZAaEdzSEvcyMsxM15lnRLtKW6bcm6E=", // 替换为您的 Session Token
+    accessKeyId: "ASIA27HET6GPQZAARMDH", // 替换为您的 Access Key ID
+    secretAccessKey: "y29Wn4w1PvG+3FbcdAMrGwBwWzfz1DXQstHHGEQt", // 替换为您的 Secret Access Key
+    sessionToken: "IQoJb3JpZ2luX2VjEBQaCXVzLXdlc3QtMiJIMEYCIQCjxoLkT91Lyt5UCzXfaSIgd0b/36B9pzKH++CuWx+B9QIhANjj24A6+suIU5ehZNHaISEbSZS5LQElM0d6rH+yPBEVKroCCO3//////////wEQARoMNzU0MjQ2MjE4MTQzIgxKYMaiY9S10SkybZ8qjgJaOPvZnTRYmiY1IdIXP7xnM9NcdJdgtk3oEgC6+er39bkwYY/I3vpO3Byb7VkaOdFeUvVF3aAzn9W4AK9cVOlZnnKEVBYDAsgtUcfKsBjgDj3FvVYr4eVDZ7N6QGe+/9q4lqVEwFp+BuEdldg2hzvV0t6g1IOD42FGJ+IQse9t+mgAanzqbVM1vwWMCmHZLmCYgNQU5AEdKwDN96K/g1h2ljmxZN6sf0DSxeHkkR1dhZrmYYdbWQc+x2eZXManHnk1wIBJsEDH9lsrG4GUM9MZ0hvbTb946ArMQSdEv45EMMVRTQl0g9eO/6bRvzF74mrR4sxUbZTW9FjtLHmuhsyEmwD3659CHgR0Dr43hjcwo6TfuwY6nAGv50AqBUpiwS7jv4eXX10ivi8r0HTaUTLBBy8oV82qsPYuDMelPHt8bkcASQ6JFpqcLHjdRhcmctIHBx8E9V+eGhM3ogJskIAKCeUXmQrY420s+uW5GDIF1LBz6es87a2lZ6sT96WuBim2z1G7jmqr9waln/ABvRD4dGP1BtBxbU6oyZKC3K5h6ynXkNKCbOwvdUN043ExdrOVp/c=", // 替换为您的 Session Token    },
     },
     // logger: console, // 啟用調試日誌
 });
@@ -95,6 +95,7 @@ export async function addUser(userID, username, email, pwHash) {
             username: { S: username },
             email: { S: email },
             pwHash: { S: pwHash },
+            SNS: { S: ""}, // SNS訂閱，初始為空，如果不存在將動態創建
             createdAt: { S: new Date().toISOString() },
             updatedAt: { S: new Date().toISOString() },
         },

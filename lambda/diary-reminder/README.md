@@ -1,6 +1,7 @@
 #打包專案
 Lambda 上建立新的函數
 並將index.mjs複製上去
+TOKEN要改成自己的資料庫
 然後部署
 
 #設定 Lambda 的執行條件
