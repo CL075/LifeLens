@@ -7,6 +7,7 @@ const Navbar = () => {
     const storedLoginStatus = localStorage.getItem("isLoggedIn");
     return storedLoginStatus === "true"; // 如果有儲存登入狀態且為 "true"，則為已登入
   });
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // 更新登入狀態並保存至 localStorage
   const toggleLogin = () => {
@@ -21,6 +22,7 @@ const Navbar = () => {
     localStorage.removeItem("isLoggedIn"); // 清除 localStorage 中的登入狀態
     alert("已登出");
   };
+
 
   return (
     <nav className="bg-blue-500 text-white px-4 py-3 shadow-md">
@@ -37,12 +39,12 @@ const Navbar = () => {
         {/* 右邊的選單 */}
         <div className="flex items-center space-x-4">
           {/* 作弊按鈕，控制登入登出狀態 */}
-          <button
+          {/* <button
             onClick={toggleLogin}
             className="px-1 py-0.5 bg-red-500 text-white rounded-md hover:bg-red-400 transition-all duration-300"
           >
             {isLoggedIn ? "作弊登出" : "作弊登入"}
-          </button>
+          </button> */}
 
           {/* 登入後顯示其他選項 */}
           {isLoggedIn ? (

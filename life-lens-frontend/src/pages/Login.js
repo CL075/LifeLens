@@ -124,11 +124,11 @@ const Login = () => {
             註冊
           </a>
         </div>
-        <div className="mt-4 text-center">
+        {/* <div className="mt-4 text-center">
           <a href="/forgot-password" className="text-red-500 hover:underline">
             不知道要不要做忘記密碼
           </a>
-        </div>
+        </div> */}
       </div>
     </div>
   );
