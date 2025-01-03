@@ -34,63 +34,126 @@ const Diary = ({ userID }) => {
           console.error("無法找到用戶 email");
           return;
         }
-
+  
         const email = typeof userData.email === "object" ? userData.email.S : userData.email;
         console.log("正在查詢的 email:", email);
-        
+  
         // 基於 email 查詢日記資料
-        const fetchedRecords = await queryEntriesByEmail(email);
-        // console.log("查詢到的日記資料:", fetchedRecords);
-
-        // 過濾結果，僅保留 email 匹配的記錄
-        const filteredRecords = fetchedRecords.filter(
-          (record) => record.email.S === email
-        );
-        //console.log("過濾後的記錄filteredRecords：", filteredRecords);
-
-        // 處理數據以顯示在頁面上
-        setRecords(
-          filteredRecords.map((record) => {
+        const data = await queryEntriesByEmail(email); // 使用基於 email 的查詢函數
+        console.log("查詢到的日記資料：", data);
+  
+        // 轉換並處理查詢結果
+        const transformedData = await Promise.all(
+          data.map(async (record) => {
             try {
-              const content = record.content ? JSON.parse(record.content.S || "{}") : {};
-              // console.log("解析出的 content:", content);
-
-              //console.log("生成的預簽名 URL:", presignedUrl);
-            
-              if (content.image) {
-                console.log("處理中的圖片檔名:", content.image);
-              }
-        
+              console.log("處理中的記錄：", record); // 檢查每條記錄
+              const content = JSON.parse(record.content.S || "{}");
+              console.log("解析出的 content:", content); // 調試輸出
+  
+              // 動態生成預簽名 URL（如果有圖片）
+              const presignedUrl = content.image
+                ? await getPresignedUrl(content.image)
+                : null;
+  
+              console.log("生成的預簽名 URL:", presignedUrl);
+  
               return {
                 entryID: record.entryID.S,
                 date: record.date.S,
-                note: content.note || "無內容",
                 mood: content.mood || "neutral",
+                note: content.note || "",
                 exercise: content.exercise || "無運動",
-                exerciseDetails: content.exerciseDetails || "無詳情",
+                exerciseDetails: content.exerciseDetails || "",
                 calories: parseFloat(content.calories || 0),
                 amount: parseFloat(content.amount || 0),
                 transactionType: content.transactionType || "expense",
-                image: content.image || null,
-                //image: presignedUrl,
+                image: presignedUrl || content.image,
               };
             } catch (error) {
-              console.error("解析記錄失敗：", error, "記錄內容：", record);
-              return null; // 如果解析失敗，返回 null
+              console.error("解析記錄失敗：", error);
+              return null;
             }
-          }).filter((record) => record !== null) // 過濾掉無效記錄
+          })
         );
-
-        console.log("處理後的 records:", records);
-
+  
+        setRecords(transformedData.filter((record) => record)); // 過濾掉無效記錄
+        console.log("處理後的記錄列表:", transformedData);
       } catch (error) {
         console.error("查詢過程中出錯：", error);
         setRecords([]);
       }
     };
-
+  
     fetchEmailAndRecords();
-  }, [userID]);
+  }, [userID]); // 根據 userID 觸發更新
+  
+
+  // useEffect(() => {
+  //   const fetchEmailAndRecords = async () => {
+  //     try {
+  //       // 從 localStorage 獲取 email
+  //       const userData = JSON.parse(localStorage.getItem("userData"));
+  //       if (!userData || !userData.email) {
+  //         console.error("無法找到用戶 email");
+  //         return;
+  //       }
+
+  //       const email = typeof userData.email === "object" ? userData.email.S : userData.email;
+  //       console.log("正在查詢的 email:", email);
+        
+  //       // 基於 email 查詢日記資料
+  //       const fetchedRecords = await queryEntriesByEmail(email);
+  //       // console.log("查詢到的日記資料:", fetchedRecords);
+
+  //       // 過濾結果，僅保留 email 匹配的記錄
+  //       const filteredRecords = fetchedRecords.filter(
+  //         (record) => record.email.S === email
+  //       );
+  //       //console.log("過濾後的記錄filteredRecords：", filteredRecords);
+
+  //       // 處理數據以顯示在頁面上
+  //       setRecords(
+  //         filteredRecords.map((record) => {
+  //           try {
+  //             const content = record.content ? JSON.parse(record.content.S || "{}") : {};
+  //             // console.log("解析出的 content:", content);
+
+  //             //console.log("生成的預簽名 URL:", presignedUrl);
+            
+  //             if (content.image) {
+  //               console.log("處理中的圖片檔名:", content.image);
+  //             }
+        
+  //             return {
+  //               entryID: record.entryID.S,
+  //               date: record.date.S,
+  //               note: content.note || "無內容",
+  //               mood: content.mood || "neutral",
+  //               exercise: content.exercise || "無運動",
+  //               exerciseDetails: content.exerciseDetails || "無詳情",
+  //               calories: parseFloat(content.calories || 0),
+  //               amount: parseFloat(content.amount || 0),
+  //               transactionType: content.transactionType || "expense",
+  //               image: content.image || null,
+  //               //image: presignedUrl,
+  //             };
+  //           } catch (error) {
+  //             console.error("解析記錄失敗：", error, "記錄內容：", record);
+  //             return null; // 如果解析失敗，返回 null
+  //           }
+  //         }).filter((record) => record !== null) // 過濾掉無效記錄
+  //       );
+
+  //       console.log("處理後的 records:", records);
+
+  //     } catch (error) {
+  //       console.error("查詢過程中出錯：", error);
+  //       setRecords([]);
+  //     }
+  //   };
+
+  //   fetchEmailAndRecords();
+  // }, [userID]);
 
 //   useEffect(() => {
 //     // ** 步驟 2：基於 email 查詢日記資料 **
@@ -141,7 +204,7 @@ const Diary = ({ userID }) => {
 //   }, [email]); // 當 email 改變時重新查詢
 
 
-// useEffect(() => {
+// useEffect(() => {  //蔡
 //   const fetchRecords = async () => {
 //       const userID = "exampleUser"; // 替換為當前用戶 ID
 //       const startDate = "2023-01-01"; // 起始日期
@@ -196,63 +259,63 @@ const Diary = ({ userID }) => {
 
 //   fetchRecords();
 // }, []);
-useEffect(() => {
-  const fetchRecords = async () => {
-    if (!email) return; // 如果 email 尚未獲取，不執行查詢
+// useEffect(() => {
+//   const fetchRecords = async () => {
+//     if (!email) return; // 如果 email 尚未獲取，不執行查詢
 
-    try {
-      const data = await queryEntriesByEmail(email); // 使用基於 email 的查詢函數
-      console.log("查詢到的日記資料：", data);
+//     try {
+//       const data = await queryEntriesByEmail(email); // 使用基於 email 的查詢函數
+//       console.log("查詢到的日記資料：", data);
 
-      // 轉換並處理查詢結果
-      const transformedData = await Promise.all(
-        data.map(async (record) => {
-          try {
-            console.log("處理中的記錄：", record); // 檢查每條記錄
-            const content = JSON.parse(record.content.S || "{}");
-            console.log("解析出的 content:", content); // 調試輸出
+//       // 轉換並處理查詢結果
+//       const transformedData = await Promise.all(
+//         data.map(async (record) => {
+//           try {
+//             console.log("處理中的記錄：", record); // 檢查每條記錄
+//             const content = JSON.parse(record.content.S || "{}");
+//             console.log("解析出的 content:", content); // 調試輸出
 
-            // 動態生成預簽名 URL（如果有圖片）
-            const presignedUrl = content.image
-              ? await getPresignedUrl(content.image)
-              : null;
+//             // 動態生成預簽名 URL（如果有圖片）
+//             const presignedUrl = content.image
+//               ? await getPresignedUrl(content.image)
+//               : null;
 
-              console.log("生成的預簽名 URL:", presignedUrl);
+//               console.log("生成的預簽名 URL:", presignedUrl);
             
-              if (content.image) {
-                console.log("處理中的圖片檔名:", content.image);
-              }
+//               if (content.image) {
+//                 console.log("處理中的圖片檔名:", content.image);
+//               }
               
 
-            return {
-              entryID: record.entryID.S,
-              date: record.date.S,
-              mood: content.mood || "neutral",
-              note: content.note || "",
-              exercise: content.exercise || "無運動",
-              exerciseDetails: content.exerciseDetails || "",
-              calories: parseFloat(content.calories || 0),
-              amount: parseFloat(content.amount || 0),
-              transactionType: content.transactionType || "expense",
-              image: presignedUrl || content.image,
-            };
-          } catch (error) {
-            console.error("解析記錄失敗：", error);
-            return null;
-          }
-        })
-      );
+//             return {
+//               entryID: record.entryID.S,
+//               date: record.date.S,
+//               mood: content.mood || "neutral",
+//               note: content.note || "",
+//               exercise: content.exercise || "無運動",
+//               exerciseDetails: content.exerciseDetails || "",
+//               calories: parseFloat(content.calories || 0),
+//               amount: parseFloat(content.amount || 0),
+//               transactionType: content.transactionType || "expense",
+//               image: presignedUrl || content.image,
+//             };
+//           } catch (error) {
+//             console.error("解析記錄失敗：", error);
+//             return null;
+//           }
+//         })
+//       );
 
-      setRecords(transformedData.filter((record) => record)); // 過濾掉無效記錄
-      console.log("處理後的記錄列表:", transformedData);
-    } catch (error) {
-      console.error("查詢日記資料失敗：", error);
-      setRecords([]); // 若查詢失敗，設置為空數組
-    }
-  };
+//       setRecords(transformedData.filter((record) => record)); // 過濾掉無效記錄
+//       console.log("處理後的記錄列表:", transformedData);
+//     } catch (error) {
+//       console.error("查詢日記資料失敗：", error);
+//       setRecords([]); // 若查詢失敗，設置為空數組
+//     }
+//   };
 
-  fetchRecords();
-}, [email]); // 當 email 改變時重新查詢
+//   fetchRecords();
+// }, [email]); // 當 email 改變時重新查詢
 
 
 // 動態生成預簽名 URL 的函數
