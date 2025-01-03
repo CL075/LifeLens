@@ -34,11 +34,12 @@ const Profile = () => {
   useEffect(() => {
     // 从 localStorage 获取用户数据
     const savedUser = JSON.parse(localStorage.getItem("userData"));
+    const savedPicture = localStorage.getItem("userPicture");
     if (savedUser) {
       setUser({
         username: typeof savedUser.username === "object" ? savedUser.username.S : savedUser.username,
         email: savedUser.email?.S || savedUser.email, // 解包多層結構
-        picture: savedUser.picture || "https://via.placeholder.com/150",
+        picture:  savedPicture || "https://via.placeholder.com/150",
       });
     }
   }, []);
@@ -90,10 +91,12 @@ const Profile = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        const imageData = reader.result;// 轉換成 Base64 Data URL
         setUser((prevUser) => ({
           ...prevUser,
-          picture: reader.result, // 設置選擇的圖片為新頭像
+          picture: imageData, // 設置選擇的圖片為新頭像
         }));
+        localStorage.setItem("userPicture", imageData);
       };
       reader.readAsDataURL(file); // 讀取文件並轉換為 Data URL
     }
