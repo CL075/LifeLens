@@ -77,9 +77,9 @@ async function getPresignedUrl(fileName) {
 }
 
 const emailRaw = JSON.parse(localStorage.getItem("userData"))?.email;
-console.log("使用的 emailRaw:", emailRaw); //使用的 emailRaw: {S: 'aaa@mail.com'}
+// console.log("使用的 emailRaw:", emailRaw); //使用的 emailRaw: {S: 'aaa@mail.com'}
 const email = emailRaw?.S || emailRaw;
-console.log("使用的 email:", email); //使用的 email: aaa@mail.com
+// console.log("使用的 email:", email); //使用的 email: aaa@mail.com
 
 
   const handleSaveRecord = async () => {
