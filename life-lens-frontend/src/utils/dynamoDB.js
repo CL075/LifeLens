@@ -217,17 +217,25 @@ export async function getUserIDByEmail(email) {
 }
 
 export async function updateUserDataByID(userID, updatedData) {
+    if (!updatedData.username && !updatedData.pwHash) {
+        throw new Error("更新數據中缺少必須的字段");
+    }
+
     const params = {
         TableName: "UsersTable",
         Key: {
         userID: { S: userID }, // 必須使用 userID
         },
-        UpdateExpression: "SET email = :email" + (updatedData.pwHash ? ", pwHash = :pwHash" : ""),
+        UpdateExpression: "SET " +
+            (updatedData.username ? "username = :username" : "") +
+            (updatedData.username && updatedData.pwHash ? ", " : "") +
+            (updatedData.pwHash ? "pwHash = :pwHash" : ""),
         ExpressionAttributeValues: {
-        ":email": { S: updatedData.email },
-        ...(updatedData.pwHash && { ":pwHash": { S: updatedData.pwHash } }),
-        },
-    };
+            ...(updatedData.username && { ":username": { S: updatedData.username } }),
+            ...(updatedData.pwHash && { ":pwHash": { S: updatedData.pwHash } }),
+            },
+};
+console.log("構造的更新參數：", params);
 
     try {
         const data = await dynamoDBClient.send(new UpdateItemCommand(params));
