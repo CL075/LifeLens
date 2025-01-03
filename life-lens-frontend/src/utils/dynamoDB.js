@@ -6,10 +6,11 @@ const REGION = "us-east-1"; // 替换为您的区域
 const dynamoDBClient = new DynamoDBClient({
     region: REGION,
     credentials: {
-        accessKeyId: "ASIA2IJ6WWFG5DMC4U56", // 替换为您的 Access Key ID
-        secretAccessKey: "Q94NhOEXwZ8SQmViLihuhRztQ5fhH+q1HIuLYhs7", // 替换为您的 Secret Access Key
-        sessionToken: "IQoJb3JpZ2luX2VjEAAaCXVzLXdlc3QtMiJIMEYCIQCek6PnXUUAAurc+VmI2QDELfxLCUJrSi9nQ+eNQ+Ob6AIhAN9E3QVOnf8/3Cfa+DWtmZVOd6gIdkf8Xubs0EbxCL5RKroCCNn//////////wEQAhoMNzA1MDQzMDE4MDYxIgzKUsJtjSSnodOsUrMqjgIqo2IuwBZhGvIWjrnOnMzX4kdVDgslF5PqgyJHURCC8Wm/47S5duIWEUgNifznmTguCtpvpVJwsWBA8uLq0Q9Asb3W2kcOPv8hJ4WMcPOSJfsJlh2bqv9AyZUkf0eZ4Q5hKTr4UMgBShXAz8lmgG5u0A1FFr92whUEMYIQKQHTkysL+QGuwrorHaZI8XW5RHSXDnnyJDGvpC9h7DVKVyyhfigtCGSIaq75pMZjzQwts+yLnrTo6QsDTIVyCJunjBApNSh7Q3/p9p0Z25msy6LNQlEoz7Ze3id2juXJfLEUoP2ee+o3xWbIsxxILQvTkvPzk/3xFvHmuY1znsapm6jgYDONPl7FBYK9hnyzMGsw8uTauwY6nAHDkuw37CsS9/L9tdhj5Kvic0aCTW28miABrfYvTh+yYPZHwOmuivNXOAYUdYoFjD5clCGBVaa4nluEnceA5o875rohoJhugM6Fq4hW2xjvdQTQCxJd1qbgJcXmbGFjn9oRhZfpJRSY6m3IhB0N9ExQt8sSQWjVK6WuaOj6QTn7aZvhHMx5AWhdmE2CphmGEk+m3Ohhp/seOLAAFBM=", // 替换为您的 Session Token
+        accessKeyId: "ASIA2IJ6WWFGWY4VVLIS", // 替换为您的 Access Key ID
+        secretAccessKey: "cp7hheMNUzXbDIINt+pUHlSAknXejuHVHSO+ilwq", // 替换为您的 Secret Access Key
+        sessionToken: "IQoJb3JpZ2luX2VjEBMaCXVzLXdlc3QtMiJHMEUCIQDThkFuoLtAoykHshqWZw1HG/nxDkm40mEjMoT0g/B2ggIgfBla63CygPgZOk4TIAjZveqMRMlruzdnXYn2fShrXcEqugII7P//////////ARACGgw3MDUwNDMwMTgwNjEiDJ3UwdYFuFgfUs0KCyqOAvSHOg4sPLOPNF/Oeu8hRddwXt5UZp3oEBbGD+nrmGAvRDAqCTUsUXBFOBAX/LJgv0WTvNhwOKrpKYr2HUAjMEZwCFol7qo/rdtZlLn9JPenmmz9EvBjE58Ds6Msv/L/ABGojqe3yYM5RiZUFEW8zwP0Xb/ogFv18Mnn+YZMyqGe7n2s+H+Rkk+tgM+AtQU1q5mB3J9P69eTaImzqdnQYmbla5/Qkm+xKuPyx2gePRG9rmBEIoM2sRMmliNrixH9FJPBd38P4KxxGrZQU0IV2+WkkHZyAwOqFBZbVQY8nc0OYM78BUX//Or6Fvyx3gdUN4qqUa4FZR4PCdz1wZkuI1OABkeZ+zaipZXPWlkdsjCPgt+7BjqdAYGiScFdzwKPWu6BlloWdJcPyFCH84F/Lkb71WxI6CXviywFi63o5k9RX0l0K9fVGHQvcji9IHwUDmafjwQcCIAYTi8CJjnkHR1EeQnaSWuxawE1yXtZmR+OL5mao/mgCXiT11Znvr84BnUMOkYPfI2xFSHXLZ4FxfjCZ+cBftR/39AV/cwNftEfuu6KdCIR1RyN3orzPt0AKJvoWhA=", // 替换为您的 Session Token
     },
+    logger: console, // 啟用調試日誌
 });
 
 // 新增数据
@@ -289,8 +290,12 @@ try {
       throw new Error("No records found for the given userID");
     }
 
-    const email = data.Items[0].email?.S;
+    // const email = data.Items[0].email?.S;
+    const email = await getEmailByUserID(userID);
+    console.log("獲取的 email：", email);
+
     if (!email) {
+    console.error("無效的 email:", email);
       throw new Error("Email not found in the record");
     }
 

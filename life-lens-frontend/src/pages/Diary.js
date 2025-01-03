@@ -27,23 +27,36 @@ const Diary = ({ userID }) => {
 
   useEffect(() => {
     const fetchEmailAndRecords = async () => {
-      try {
-        // 步驟 1：從 UsersTable 查詢 email
-        console.log("正在查詢的 userID:", userID);
-        const fetchedEmail = await getEmailByUserID(userID);
-        console.log("獲取到的 email:", fetchedEmail);
-        setEmail(fetchedEmail);
+    // const userData = JSON.parse(localStorage.getItem("userData"));
+    // if (!userData || !userData.userID) {
+    //   console.error("無法找到用戶數據");
+    //   return;
+    // }
+  
+    // const userID = userData.userID;
+    // console.log("正在查詢的 userID:", userID);
 
-        // 步驟 2：基於 email 查詢日記資料
-        const fetchedRecords = await queryEntriesByEmail(fetchedEmail);
+      try {
+        // 從 localStorage 獲取 email
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        if (!userData || !userData.email) {
+          console.error("無法找到用戶 email");
+          return;
+        }
+
+        const email = typeof userData.email === "object" ? userData.email.S : userData.email;
+        console.log("正在查詢的 email:", email);
+        
+        // 基於 email 查詢日記資料
+        const fetchedRecords = await queryEntriesByEmail(email);
         console.log("查詢到的日記資料:", fetchedRecords);
 
-        // 過濾結果，確保每條記錄屬於該 email
+        // 過濾結果，僅保留 email 匹配的記錄
         const filteredRecords = fetchedRecords.filter(
-          (record) => record.email.S === fetchedEmail
+          (record) => record.email.S === email
         );
 
-        // 處理數據
+        // 處理數據以顯示在頁面上
         setRecords(
           filteredRecords.map((record) => ({
             entryID: record.entryID.S,
@@ -51,6 +64,30 @@ const Diary = ({ userID }) => {
             note: record.content ? JSON.parse(record.content.S).note : "",
           }))
         );
+
+        // 步驟 1：從 UsersTable 查詢 email
+        // console.log("正在查詢的 userID:", userID);
+        // const fetchedEmail = await getEmailByUserID(userID);
+        // console.log("獲取到的 email:", fetchedEmail);
+        // setEmail(fetchedEmail);
+
+        // // 步驟 2：基於 email 查詢日記資料
+        // const fetchedRecords = await queryEntriesByEmail(fetchedEmail);
+        // console.log("查詢到的日記資料:", fetchedRecords);
+
+        // // 過濾結果，確保每條記錄屬於該 email
+        // const filteredRecords = fetchedRecords.filter(
+        //   (record) => record.email.S === fetchedEmail
+        // );
+
+        // // 處理數據
+        // setRecords(
+        //   filteredRecords.map((record) => ({
+        //     entryID: record.entryID.S,
+        //     date: record.date.S,
+        //     note: record.content ? JSON.parse(record.content.S).note : "",
+        //   }))
+        // );
       } catch (error) {
         console.error("查詢過程中出錯：", error);
         setRecords([]);

@@ -25,8 +25,15 @@ const Login = () => {
         setErrorMessage("帳號或密碼錯誤");
       } else {
       // 登入成功，儲存登入狀態和用戶資料
+      // localStorage.setItem("isLoggedIn", "true");
+      // localStorage.setItem("userData", JSON.stringify(user)); // 儲存用戶資料
+      // 保存用戶數據到 localStorage
       localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userData", JSON.stringify(user)); // 儲存用戶資料
+      localStorage.setItem("userData", JSON.stringify({
+        userID: user.userID.S,
+        username: user.username.S,
+        email: user.email.S,
+      }));
 
       alert("登入成功！");
       

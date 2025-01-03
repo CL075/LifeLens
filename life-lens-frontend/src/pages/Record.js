@@ -91,6 +91,7 @@ console.log("使用的 email:", email); //使用的 email: aaa@mail.com
     const today = new Date().toISOString().split("T")[0]; // 獲取今天日期
 
     if (!email) {
+      console.error("無效的 email:", email);
       alert("無法獲取用戶的 email，請重新登入！");
       return;
     }
