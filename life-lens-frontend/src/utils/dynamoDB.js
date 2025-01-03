@@ -6,9 +6,9 @@ const REGION = "us-east-1"; // 替换为您的区域
 const dynamoDBClient = new DynamoDBClient({
     region: REGION,
     credentials: {
-        accessKeyId: "ASIA2IJ6WWFGWY4VVLIS", // 替换为您的 Access Key ID
-        secretAccessKey: "cp7hheMNUzXbDIINt+pUHlSAknXejuHVHSO+ilwq", // 替换为您的 Secret Access Key
-        sessionToken: "IQoJb3JpZ2luX2VjEBMaCXVzLXdlc3QtMiJHMEUCIQDThkFuoLtAoykHshqWZw1HG/nxDkm40mEjMoT0g/B2ggIgfBla63CygPgZOk4TIAjZveqMRMlruzdnXYn2fShrXcEqugII7P//////////ARACGgw3MDUwNDMwMTgwNjEiDJ3UwdYFuFgfUs0KCyqOAvSHOg4sPLOPNF/Oeu8hRddwXt5UZp3oEBbGD+nrmGAvRDAqCTUsUXBFOBAX/LJgv0WTvNhwOKrpKYr2HUAjMEZwCFol7qo/rdtZlLn9JPenmmz9EvBjE58Ds6Msv/L/ABGojqe3yYM5RiZUFEW8zwP0Xb/ogFv18Mnn+YZMyqGe7n2s+H+Rkk+tgM+AtQU1q5mB3J9P69eTaImzqdnQYmbla5/Qkm+xKuPyx2gePRG9rmBEIoM2sRMmliNrixH9FJPBd38P4KxxGrZQU0IV2+WkkHZyAwOqFBZbVQY8nc0OYM78BUX//Or6Fvyx3gdUN4qqUa4FZR4PCdz1wZkuI1OABkeZ+zaipZXPWlkdsjCPgt+7BjqdAYGiScFdzwKPWu6BlloWdJcPyFCH84F/Lkb71WxI6CXviywFi63o5k9RX0l0K9fVGHQvcji9IHwUDmafjwQcCIAYTi8CJjnkHR1EeQnaSWuxawE1yXtZmR+OL5mao/mgCXiT11Znvr84BnUMOkYPfI2xFSHXLZ4FxfjCZ+cBftR/39AV/cwNftEfuu6KdCIR1RyN3orzPt0AKJvoWhA=", // 替换为您的 Session Token
+        accessKeyId: "ASIAZ3TE2CMVKWX2OQWL", // 替换为您的 Access Key ID
+        secretAccessKey: "KE2+BBB+oz4Cg3lx45YoXdrMJaOdzarUhi3TsuhH", // 替换为您的 Secret Access Key
+        sessionToken: "IQoJb3JpZ2luX2VjEBMaCXVzLXdlc3QtMiJIMEYCIQD+PaK/0VL9R2MI6XkKdNdGoDWtMTXHjNR6zreXjQnLfAIhAMfjS+SWmc3GBObvueRzJP1UC1jK7GdRGb56vyamaHRiKroCCOz//////////wEQABoMNjc3NzQyNTE0OTg2IgwTVfGsOcjNVnGb1MMqjgKuz6ptQt6TEK+YGyLqBVxkdubM32IwBnnDqjDEOcuFkJQCLVFxddOIDDHrFrODQowh115TDOMqNyPKXg6da84P5GGaXf9Jjt+yQ8RW8kVTDiZdDS4Kwx4+yJI5WREljonO4KD7O8Xknxe6JGFK3fPw0mjBdwMbgSn3xn9lK+CL7NUlYGwch/iqjeLGF2VaQ5Za5N4xdU6NsIwfcn/SUQrUB/ejH05EjDY6yTJSZ15iBr5+bP5N86eUHpIUzTeIJiJFc6j8of0OhLVAF6/ANtBikEkBprS5/g4wKIBveZgP9tj/Daw7isDezXzcNyaZ/aF0trpZXvSMfadF/Lw+HQAmfw2IryQKAIKx1GNtMG4wy4LfuwY6nAGntoYQ6eeFwpkfW/oNW1gAtRAVQ4Vu9VEcqoh1ZlqtzsusrQaHcCtL7UkX3Sp3C0uCdVZgd6fO3lh0SW5Se/1T7k/1aV+hCbXFkfRtYMRl7mwSNpNflDRG9nIaeN7ALrTLctXH4rgz5z+4ckywovEaN9pQs9Q52mJV2GIAfTU2XOTKN8qi6e5RDBeIz+5KK0h64nIy0Z+g+pvqlkk=", // 替换为您的 Session Token
     },
     logger: console, // 啟用調試日誌
 });
@@ -39,26 +39,6 @@ export async function addEntry(userID, email, date, entryType, content) {
         console.error("Error adding data:", err);
     }
 }
-
-// export async function queryEntriesByEmail(email) {
-//     const params = {
-//         TableName: "LifeLensDataNew",
-//         IndexName: "email-index", // 基於 email-index 查詢
-//         KeyConditionExpression: "email = :email",
-//         ExpressionAttributeValues: {
-//         ":email": { S: email },
-//         },
-//     };
-
-//     try {
-//         const data = await dynamoDBClient.send(new QueryCommand(params));
-//         console.log("查詢結果：", data.Items);
-//         return data.Items || [];
-//     } catch (err) {
-//         console.error("查詢失敗：", err);
-//         throw err;
-//     }
-// }
 
 
 // 查询数据

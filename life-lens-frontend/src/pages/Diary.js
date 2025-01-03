@@ -55,15 +55,38 @@ const Diary = ({ userID }) => {
         const filteredRecords = fetchedRecords.filter(
           (record) => record.email.S === email
         );
+        console.log("過濾後的記錄filteredRecords：", filteredRecords);
 
         // 處理數據以顯示在頁面上
         setRecords(
-          filteredRecords.map((record) => ({
-            entryID: record.entryID.S,
-            date: record.date.S,
-            note: record.content ? JSON.parse(record.content.S).note : "",
-          }))
+          filteredRecords.map((record) => {
+            try {
+              const content = record.content ? JSON.parse(record.content.S || "{}") : {};
+              console.log("解析出的 content:", content);
+        
+              return {
+                entryID: record.entryID.S,
+                date: record.date.S,
+                note: content.note || "無內容",
+                mood: content.mood || "neutral",
+                exercise: content.exercise || "無運動",
+                exerciseDetails: content.exerciseDetails || "無詳情",
+                calories: parseFloat(content.calories || 0),
+                amount: parseFloat(content.amount || 0),
+                transactionType: content.transactionType || "expense",
+                image: content.image || null,
+                //image: presignedUrl,
+              };
+            } catch (error) {
+              console.error("解析記錄失敗：", error, "記錄內容：", record);
+              return null; // 如果解析失敗，返回 null
+            }
+          }).filter((record) => record !== null) // 過濾掉無效記錄
         );
+
+        console.log("處理後的 records:", records);
+
+        
 
         // 步驟 1：從 UsersTable 查詢 email
         // console.log("正在查詢的 userID:", userID);
@@ -135,7 +158,7 @@ const Diary = ({ userID }) => {
 //           })
 //         );
 
-//         setRecords(transformedData.filter((record) => record)); // 過濾掉無效記錄
+        // setRecords(transformedData.filter((record) => record)); // 過濾掉無效記錄
 //       } catch (error) {
 //         console.error("查詢日記資料失敗：", error);
 //         setRecords([]); // 若查詢失敗，設置為空數組
@@ -159,7 +182,7 @@ const Diary = ({ userID }) => {
 
 //           if (!data || !Array.isArray(data)) {
 //               console.error("No data or invalid data structure");
-//               setRecords([]); // 如果數據無效，設置為空數組
+              // setRecords([]); // 如果數據無效，設置為空數組
 //               return;
 //           }
 
@@ -212,6 +235,7 @@ useEffect(() => {
       const transformedData = await Promise.all(
         data.map(async (record) => {
           try {
+            console.log("處理中的記錄：", record); // 檢查每條記錄
             const content = JSON.parse(record.content.S || "{}");
             console.log("解析出的 content:", content); // 調試輸出
 
@@ -230,7 +254,7 @@ useEffect(() => {
               calories: parseFloat(content.calories || 0),
               amount: parseFloat(content.amount || 0),
               transactionType: content.transactionType || "expense",
-              image: presignedUrl,
+              image: presignedUrl || content.image,
             };
           } catch (error) {
             console.error("解析記錄失敗：", error);
@@ -240,6 +264,7 @@ useEffect(() => {
       );
 
       setRecords(transformedData.filter((record) => record)); // 過濾掉無效記錄
+      console.log("處理後的記錄列表:", transformedData);
     } catch (error) {
       console.error("查詢日記資料失敗：", error);
       setRecords([]); // 若查詢失敗，設置為空數組
@@ -269,12 +294,8 @@ const getPresignedUrl = async (fileName) => {
 
 
 
-  
-
-
-  
-
 const handleEntryClick = (entryID) => {
+  console.log("點擊的 Entry ID:", entryID); // 添加調試輸出
   setSelectedEntryID(entryID); // 設置選中的 entryID
 };
 
@@ -327,7 +348,9 @@ const handleEntryClick = (entryID) => {
   if (selectedEntryID) {
     const selectedRecord = records.find(
       (record) => record.entryID === selectedEntryID) || {};
-    
+
+      console.log("選中的 Entry ID:", selectedEntryID);
+      console.log("選中的記錄:", selectedRecord);
 
 
     return (
