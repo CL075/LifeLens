@@ -78,7 +78,7 @@ const Dashboard = () => {
 
         // 呼叫你的 Lambda API
         const res = await axios.get(
-          "https://d2irx7tm2h.execute-api.us-east-1.amazonaws.com/default/getDiaryRecords",
+          " https://qwqqxjjj68.execute-api.us-east-1.amazonaws.com/default/DiaryRecords",
           { params: { email } }
         );
 
