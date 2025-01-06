@@ -3,9 +3,9 @@ import { S3Client } from "@aws-sdk/client-s3";
 const s3Client = new S3Client({
     region: "us-east-1", // 替换为您的区域
     credentials: {
-        accessKeyId: "ASIAZ3TE2CMVNQ66I4QM", // 替换为您的 Access Key ID
-        secretAccessKey: "S/naHfcgD1M0vgr4M3EoaSwHmEmmv1w5LSd+wkgh", // 替换为您的 Secret Access Key
-        sessionToken: "IQoJb3JpZ2luX2VjEFkaCXVzLXdlc3QtMiJHMEUCIQCsDMbBx4ZfJ71pPMisZYmjydjCbSZUdLriPtxLs7j7RAIgZPuTpiXwh6udFATmYs+v2mXDsPln56iYoOCPUej21qYqsQIIQRAAGgw2Nzc3NDI1MTQ5ODYiDOH4kjQH4zKv6qSP8CqOApgxVeRGKAVBtp/odolUiTMnhKR5pr0WfBsUQzwyctN20+eSEG8qgD0AwJDJfgDSFYrhdQxE/zev+/nYgYmqW7QlS9e9fRkTfpxmhWZBaM4x/fLJ0cZEA4SkkanlQDsd9/mcmG7jjKLlsJQ//RYd6CqZtwX1P27y1KmqBSQ8JAz8ZaV3efWtYMrNiOOW4l3BuHB0qMor+UEua6NYd4EZlc2x3OhL7QjzocO7s0xkrUNo2N3nK2j667ohUs1eH1Qcsu6qsIh5HZAl1dvJhKCU0BNVlqYbTr0X29OS0NxktzGsHji4X4lxfCnquVjWTMLXYlVp0s7G085gFeexMqtadnAoZjr2ro9sWRD2DwoUoTC+pO67BjqdAQG7r2xRlIdPS5Khg3SXEV+QNOpTjZ4XeB8r7XA5vTZaEIRGf8sjB0Aw18+DEmwIjcf0e8YW17B0g801B1sY+hkHULPJ3+Voe0d1e60QmqnWv9S8lmVvJ6gSAB1xPmIZUfw1oPtXyJSz97FC9jmK/NIAVgKRxB7YrwV2EaAQdTHlxtQz1s/gHBFRceeaedLmThFk19FfwqY9++bCdBw=", // 替换为您的 Session Token
+        accessKeyId: "ASIAZ3TE2CMVNQNRP5HF", // 替换为您的 Access Key ID
+        secretAccessKey: "lC0L3q6qORD6lJOkiF81Fd5DLqcgt/V3vaaaqJYl", // 替换为您的 Secret Access Key
+        sessionToken: "IQoJb3JpZ2luX2VjEFwaCXVzLXdlc3QtMiJGMEQCIDqwzn4NgIKoePIBRcJtYHNe4r4SwDdSjDtx6C0+girdAiB+6X6tIQGe5Z51afpV6SYOiimLql/KZlgOs9jwKGNNvSqxAghFEAAaDDY3Nzc0MjUxNDk4NiIMuLzoQbRhuzTH/qpOKo4CRz5XzR2NIc8Bj5lXEUlp+lNYZ6WITqqLttIdewPMKKKXyh0GyC6/iIY+LsZKPn/OLbxWFIL+sOuLI4KthK/5Bz2lTz9yGIIItggufzlLoWKmYR85RMxcyPIWk9vpVWqBbcxOb0Jo70KsKT2WqGsu0OA9SRszHe9l44xQ3fh93JwIZgbK73rkVH7hpYe/gfODZlI6SUorLzplV2y4B0ivMBL2Svc5b5NGwONdbZkawJtKR41xPB5WZ5izy2DJCSr1xd37bEHz6B0fhukEE5n19MpbdOc5WGhS7BuHTIJghUUnUsWv+OvfNP3ynh1ExuK3DgZjfsGdqsMBrtCWXLvrjE/PUIe2WJ2zdjSYxwWjMNr67rsGOp4BSCPckakT5RzCHs60CZcUychz3zvndK6zKQk0UnexymPPk8eCx8jAa2rU42Z75gdnR41cBvtqOvhRngzP5RITDZN6LJBGG8MoF2hqplLbMqsVGEuhFWk82Kr/bYc/PG755s05Qep5KILzXYvNh/Pifbor6TS8/7X01SRQLSrLsNiyPNd8/Dad1popgGCen0Pyle7PNigm2s6P+2zmvz4=", // 替换为您的 Session Token
     },
 });
 
